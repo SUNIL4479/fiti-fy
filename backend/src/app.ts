@@ -21,7 +21,40 @@ dotenv.config({ path: path.join(envSearch, ".env"), quiet: true });
 mongoose.set("bufferCommands", false);
 
 const app = express();
+app.set("trust proxy", 1);
 app.use(express.json({ limit: "10mb" }));
+
+// Basic CORS support for local dev + configured production domain.
+app.use((req, res, next) => {
+  const requestOrigin = req.headers.origin;
+  const appUrl = process.env.APP_URL;
+
+  const allowedOrigins = new Set<string>([
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000",
+  ]);
+
+  if (appUrl) {
+    allowedOrigins.add(appUrl);
+  }
+
+  if (requestOrigin && allowedOrigins.has(requestOrigin)) {
+    res.setHeader("Access-Control-Allow-Origin", requestOrigin);
+  }
+
+  res.setHeader("Vary", "Origin");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+
+  if (req.method === "OPTIONS") {
+    return res.status(204).end();
+  }
+
+  next();
+});
 
 // --- Stateless signed-cookie sessions (serverless-safe, works on Vercel) ---
 const SESSION_SECRET = process.env.SESSION_SECRET || "dev-insecure-secret-change-me";
@@ -71,7 +104,11 @@ const setSessionCookie = (res: express.Response, userId: string) => {
 };
 
 const clearSessionCookie = (res: express.Response) => {
-  res.setHeader("Set-Cookie", `${SESSION_COOKIE}=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax`);
+  const secure = process.env.NODE_ENV === "production";
+  res.setHeader(
+    "Set-Cookie",
+    `${SESSION_COOKIE}=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax${secure ? "; Secure" : ""}`
+  );
 };
 
 interface AuthedRequest extends express.Request {
@@ -463,7 +500,7 @@ Generate a structured, safe, zero-equipment workout session based on the user re
 Take strict note of medical limitations (e.g. knee pain = no heavy jumps/squats; back pain = low impact core).
 
 User Query: "${userPrompt}"
-User Profile: Goal: ${profile?.goal || "General Fitness"}, Experience: ${profile?.experience || "Beginner"}, Medical/Injuries: ${profile?.medicalLimitations || "None"}, Preferred Duration: ${profile?.durationMin || 30} mins.
+User Profile: Goal: ${profile?.goal || "General Fitness"}, Experience: ${profile?.experience || "Beginner"}, Medical/Injuries: ${profile?.medicalLimitations || "None"}, Preferred Duration: ${profile?.durationMin || 20} minutes.
 
 Return JSON matching this schema:
 {
