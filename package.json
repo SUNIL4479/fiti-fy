@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "workspaces": ["backend", "frontend"],
   "scripts": {
@@ -17,9 +17,6 @@
     "start": "node backend/dist/server.cjs",
     "lint": "tsc --noEmit",
     "clean": "rimraf frontend/dist backend/dist"
-  },
-  "engines": {
-    "node": "24.x"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
