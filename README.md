@@ -97,7 +97,7 @@ The two source folders are `backend/` and `frontend/`. Everything else in the re
 
 ## Prerequisites
 
-- **[Node.js](https://nodejs.org/)** v18 or higher
+- **[Node.js](https://nodejs.org/)** v18 or higher locally (v22 recommended; Vercel deploys with Node 24 via `engines`)
 - **npm** v9+ (comes bundled with Node.js)
 - A **Google Gemini API key** (free tier available)
 - (Optional, for accounts) A **MongoDB** database
@@ -188,6 +188,8 @@ The repo is configured for Vercel via `vercel.json` using the `builds` configura
    - `SESSION_SECRET`
 3. Deploy. No build command or output directory needs to be set manually — the `builds` config in `vercel.json` handles it.
 
+> **Node.js version:** The root `package.json` pins `"engines": { "node": "24.x" }`. This forces Vercel to build and run on Node.js 24 (Node 20 is deprecated on Vercel and its builds will start failing after 2026-10-01). For extra safety you can also set **Settings → Build and Deployment → Node.js Version → 24.x** in the Vercel dashboard.
+>
 > Note: On Vercel the function runs on the `/api` route. The auth cookie is signed and stateless, so it works across serverless instances (no server-side session store needed).
 
 ---

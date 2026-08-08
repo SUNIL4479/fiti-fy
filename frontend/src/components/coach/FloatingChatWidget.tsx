@@ -32,7 +32,7 @@ export const FloatingChatWidget: React.FC<FloatingChatWidgetProps> = ({ user, op
   return (
     <>
       {open && (
-        <div className="fixed bottom-23 right-4 sm:right-6 z-40 w-[calc(100vw-2rem)] max-w-md h-[70vh] max-h-[560px] bg-[#0f0f0f] border border-[#222222] rounded-[24px] overflow-hidden shadow-2xl flex flex-col animate-fade-in">
+        <div className="fixed bottom-23 right-8 sm:right-10 z-40 w-[calc(100vw-4rem)] max-w-md h-[70vh] max-h-[560px] bg-[#0f0f0f] border border-[#222222] rounded-[24px] overflow-hidden shadow-2xl flex flex-col animate-fade-in">
           <AICoachChat user={chatUser} embedded />
         </div>
       )}
@@ -41,7 +41,7 @@ export const FloatingChatWidget: React.FC<FloatingChatWidgetProps> = ({ user, op
         onClick={onToggle}
         aria-label={open ? "Close AI Coach Chat" : "Open AI Coach Chat"}
         title="AI Coach Chat"
-        className="fixed bottom-5 right-4 sm:right-6 z-40 w-14 h-14 rounded-full bg-[#c6ff00] hover:bg-[#b0e600] text-black flex items-center justify-center shadow-xl shadow-[#c6ff00]/25 transition-all hover:scale-105"
+        className="fixed bottom-3 right-8 sm:right-10 z-40 w-14 h-14 rounded-full bg-[#c6ff00] hover:bg-[#b0e600] text-black flex items-center justify-center shadow-xl shadow-[#c6ff00]/25 transition-all hover:scale-105"
       >
         {open ? <X className="w-6 h-6" /> : <Bot className="w-7 h-7" />}
         {!open && (
