@@ -5,6 +5,8 @@ import fs from "node:fs";
 import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
+import cors from "cors";
+
 
 // Load .env from the project root by walking up from the current directory.
 // Works whether the server runs from the backend workspace (npm run dev:backend)
@@ -20,6 +22,10 @@ dotenv.config({ path: path.join(envSearch, ".env"), quiet: true });
 mongoose.set("bufferCommands", false);
 
 const app = express();
+app.use(cors({
+  origin: process.env.APP_URL,
+  credentials: true,
+}));
 app.set("trust proxy", 1);
 app.use(express.json({ limit: "10mb" }));
 
@@ -29,6 +35,7 @@ app.use((req, res, next) => {
   const appUrl = process.env.APP_URL;
 
   const allowedOrigins = new Set<string>([
+    process.env.APP_URL,
     "http://localhost:5173",
     "http://localhost:3000",
     "http://127.0.0.1:5173",
@@ -117,6 +124,10 @@ interface AuthedRequest extends express.Request {
 app.use((req: AuthedRequest, _res, next) => {
   req.userId = verifyToken(readCookie(req, SESSION_COOKIE));
   next();
+});
+
+app.get("/api/health", (req, res) => {
+  res.json({ success: "Ok", message: "Backend is running" });
 });
 
 // --- MongoDB Connection ---
