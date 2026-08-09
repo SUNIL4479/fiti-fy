@@ -699,4 +699,11 @@ app.post("/api/ai/speak-text", async (req, res) => {
   }
 });
 
+// Last-resort error handler: any uncaught sync/async error becomes a JSON 500
+// instead of an unhandled exception that crashes the serverless invocation.
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error("Unhandled error:", err);
+  res.status(500).json({ success: false, error: "Internal server error" });
+});
+
 export default app;
