@@ -212,7 +212,8 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#050505]/90 backdrop-blur-lg overflow-y-auto">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#050505]/90 backdrop-blur-lg">
+      <div className="min-h-full flex items-center justify-center p-3 sm:p-4">
       <div className="relative w-full max-w-2xl bg-[#0f0f0f] border border-[#222222] rounded-[28px] p-5 sm:p-8 shadow-2xl text-white my-8">
         
         {/* Top Header & Auth Mode Tabs */}
@@ -762,6 +763,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
             )}
           </div>
         )}
+      </div>
       </div>
     </div>
   );
