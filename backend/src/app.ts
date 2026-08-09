@@ -5,7 +5,6 @@ import fs from "node:fs";
 import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
-import { GoogleGenAI, Type } from "@google/genai";
 
 // Load .env from the project root by walking up from the current directory.
 // Works whether the server runs from the backend workspace (npm run dev:backend)
@@ -355,12 +354,25 @@ app.get("/api/leaderboard", async (_req, res) => {
   }
 });
 
-// --- Gemini Client ---
-function getGeminiClient() {
+// --- Gemini Client (lazy-loaded so /api/health and auth endpoints don't pay the
+// ~5MB @google/genai module graph on every cold start) ---
+type GenaiModule = typeof import("@google/genai");
+
+let genaiModule: GenaiModule | null = null;
+
+async function loadGenai(): Promise<GenaiModule> {
+  if (!genaiModule) {
+    genaiModule = await import("@google/genai");
+  }
+  return genaiModule;
+}
+
+async function getGeminiClient() {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error("GEMINI_API_KEY is not set in environment variables.");
   }
+  const { GoogleGenAI } = await loadGenai();
   return new GoogleGenAI({
     apiKey,
     httpOptions: {
@@ -392,7 +404,8 @@ app.post("/api/ai/fitness-profile", async (req, res) => {
       medicalLimitations,
     } = req.body;
 
-    const ai = getGeminiClient();
+    const ai = await getGeminiClient();
+    const { Type } = await loadGenai();
     const prompt = `Calculate detailed fitness metrics and a personalized body profile for this individual:
 Name: ${name || "User"}
 Age: ${age}
@@ -494,7 +507,7 @@ app.post("/api/ai/generate-workout", async (req, res) => {
   try {
     const { userPrompt, profile } = req.body;
 
-    const ai = getGeminiClient();
+    const ai = await getGeminiClient();
     const systemPrompt = `You are FitiFy, an elite personal trainer specializing in zero-equipment home bodyweight workouts.
 Generate a structured, safe, zero-equipment workout session based on the user request and user profile.
 Take strict note of medical limitations (e.g. knee pain = no heavy jumps/squats; back pain = low impact core).
@@ -552,7 +565,7 @@ For each exercise in warmUp, mainRoutine, coolDown:
 app.post("/api/ai/generate-nutrition", async (req, res) => {
   try {
     const { profile } = req.body;
-    const ai = getGeminiClient();
+    const ai = await getGeminiClient();
 
     const prompt = `Create a 1-day personalized home nutrition and meal plan for:
 Goal: ${profile?.goal || "General Health"}
@@ -620,7 +633,7 @@ Return JSON structure:
 app.post("/api/ai/coach-chat", async (req, res) => {
   try {
     const { message, history, profile } = req.body;
-    const ai = getGeminiClient();
+    const ai = await getGeminiClient();
 
     const formattedHistory = (history || []).map((item: any) => ({
       role: item.role === "user" ? "user" : "model",
@@ -672,7 +685,7 @@ app.get("/api/exercisedb", async (req, res) => {
 app.post("/api/ai/speak-text", async (req, res) => {
   try {
     const { text, voice = "Kore" } = req.body;
-    const ai = getGeminiClient();
+    const ai = await getGeminiClient();
 
     const response = await ai.models.generateContent({
       model: "gemini-3.1-flash-tts-preview",
