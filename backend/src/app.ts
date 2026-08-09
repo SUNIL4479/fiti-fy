@@ -27,6 +27,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://fiti-fy-frontend.vercel.app",
+      "https://fiti-fy-frontend-git-main-productivityalex147-1718s-projects.vercel.app",
     ],
     credentials: true,
   })
@@ -96,6 +97,13 @@ interface AuthedRequest extends express.Request {
 app.use((req: AuthedRequest, _res, next) => {
   req.userId = verifyToken(readCookie(req, SESSION_COOKIE));
   next();
+});
+
+app.get("/", (_req, res) => {
+  res.json({
+    status: "ok",
+    message: "FitiFI backend is running",
+  });
 });
 
 app.get("/api/health", (req, res) => {
