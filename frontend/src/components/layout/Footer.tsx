@@ -4,14 +4,14 @@ import logo from "../../assets/images/logo.png";
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-[#050505]/55 border-t border-[#222222] text-slate-400 py-12 text-xs">
+    <footer className="bg-[#050505]/55 border-t border-[#222222] text-slate-400 py-12 text-xs sm:text-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#0f0f0f] border border-[#222222] flex items-center justify-center overflow-hidden shrink-0">
-              <img src={logo} alt="FitiFy logo" className="w-7 h-7 object-contain" />
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#0f0f0f] border border-[#222222] flex items-center justify-center overflow-hidden shrink-0">
+              <img src={logo} alt="FitiFy logo" className="w-7 h-7 sm:w-8 sm:h-8 object-contain" />
             </div>
-            <span className="text-sm font-bold text-white">FitiFy Coach</span>
+            <span className="text-sm sm:text-base font-bold text-white">FitiFy Coach</span>
           </div>
 
           <div className="flex items-center gap-2 text-[#666666]">

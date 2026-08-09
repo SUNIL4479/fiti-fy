@@ -153,6 +153,8 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
         { id: "task_3", title: "Post-Workout Light Stretching", timeMin: 10, category: "Flexibility", targetMuscle: "Full Body Joints", completed: false },
       ];
 
+      const joinedDate = new Date().toISOString().split("T")[0];
+
       const newProfile: UserProfile = {
         id: "temp_id", // Backend handles real ID
         name: name || "Fitness Athlete",
@@ -180,7 +182,8 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
         level: 1,
         streakDays: 0,
         waterIntakeMl: 0,
-        joinedDate: new Date().toISOString().split("T")[0],
+        joinedDate,
+        weightLogs: [{ date: joinedDate, weightKg }],
         dailyTodoTasks: initialTasks,
       };
 
@@ -209,8 +212,8 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#050505]/90 backdrop-blur-lg overflow-y-auto">
-      <div className="relative w-full max-w-xl bg-[#0f0f0f] border border-[#222222] rounded-[28px] p-6 sm:p-8 shadow-2xl text-white my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#050505]/90 backdrop-blur-lg overflow-y-auto">
+      <div className="relative w-full max-w-2xl bg-[#0f0f0f] border border-[#222222] rounded-[28px] p-5 sm:p-8 shadow-2xl text-white my-8">
         
         {/* Top Header & Auth Mode Tabs */}
         <div className="flex items-center justify-between pb-6 border-b border-[#222222]">
@@ -262,14 +265,14 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
               <div>
                 <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">Email Address</label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                  <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-4" />
                   <input
                     type="email"
                     required
                     placeholder="user@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-[#050505] border border-[#222222] focus:border-[#c6ff00] rounded-xl pl-10 pr-4 py-3 text-white text-sm outline-none"
+                    className="w-full bg-[#050505] border border-[#222222] focus:border-[#c6ff00] rounded-xl pl-10 pr-4 py-3.5 text-white text-sm outline-none"
                   />
                 </div>
               </div>
@@ -277,14 +280,14 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
               <div>
                 <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">Password</label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                  <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-4" />
                   <input
                     type="password"
                     required
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-[#050505] border border-[#222222] focus:border-[#c6ff00] rounded-xl pl-10 pr-4 py-3 text-white text-sm outline-none"
+                    className="w-full bg-[#050505] border border-[#222222] focus:border-[#c6ff00] rounded-xl pl-10 pr-4 py-3.5 text-white text-sm outline-none"
                   />
                 </div>
               </div>
@@ -299,7 +302,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-2xl bg-[#c6ff00] hover:bg-[#b0e600] text-black font-extrabold text-sm shadow-xl flex items-center justify-center gap-2 mt-4"
+              className="w-full py-4 rounded-2xl bg-[#c6ff00] hover:bg-[#b0e600] text-black font-extrabold text-sm shadow-xl flex items-center justify-center gap-2 mt-4"
             >
               {loading ? (
                 <>
@@ -366,7 +369,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
                       placeholder="e.g. Alex Morgan"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full bg-[#050505] border border-[#222222] focus:border-[#c6ff00] rounded-xl px-4 py-3 text-white text-sm outline-none"
+                      className="w-full bg-[#050505] border border-[#222222] focus:border-[#c6ff00] rounded-xl px-4 py-3.5 text-white text-sm outline-none"
                     />
                   </div>
 
@@ -377,14 +380,14 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
                       placeholder="alex@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-[#050505] border border-[#222222] focus:border-[#c6ff00] rounded-xl px-4 py-3 text-white text-sm outline-none"
+                      className="w-full bg-[#050505] border border-[#222222] focus:border-[#c6ff00] rounded-xl px-4 py-3.5 text-white text-sm outline-none"
                     />
                   </div>
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">Password</label>
                     <div className="relative">
-                      <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                      <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-4" />
                       <input
                         type={showPassword ? "text" : "password"}
                         required
@@ -392,12 +395,12 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
                         placeholder="At least 6 characters"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full bg-[#050505] border border-[#222222] focus:border-[#c6ff00] rounded-xl pl-10 pr-11 py-3 text-white text-sm outline-none"
+                        className="w-full bg-[#050505] border border-[#222222] focus:border-[#c6ff00] rounded-xl pl-10 pr-11 py-3.5 text-white text-sm outline-none"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3.5 top-3.5 text-slate-500 hover:text-slate-300 transition-colors"
+                        className="absolute right-3.5 top-4 text-slate-500 hover:text-slate-300 transition-colors"
                         aria-label={showPassword ? "Hide password" : "Show password"}
                       >
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -408,7 +411,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">Confirm Password</label>
                     <div className="relative">
-                      <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                      <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-4" />
                       <input
                         type={showPassword ? "text" : "password"}
                         required
@@ -416,7 +419,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
                         placeholder="Re-enter your password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="w-full bg-[#050505] border border-[#222222] focus:border-[#c6ff00] rounded-xl pl-10 pr-4 py-3 text-white text-sm outline-none"
+                        className="w-full bg-[#050505] border border-[#222222] focus:border-[#c6ff00] rounded-xl pl-10 pr-4 py-3.5 text-white text-sm outline-none"
                       />
                     </div>
                   </div>
@@ -433,7 +436,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
                       type="number"
                       value={age}
                       onChange={(e) => setAge(Number(e.target.value))}
-                      className="w-full bg-[#050505] border border-[#222222] focus:border-[#c6ff00] rounded-xl px-4 py-3 text-white text-sm outline-none"
+                      className="w-full bg-[#050505] border border-[#222222] focus:border-[#c6ff00] rounded-xl px-4 py-3.5 text-white text-sm outline-none"
                     />
                   </div>
                 </div>
@@ -675,7 +678,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
                       <select
                         value={experience}
                         onChange={(e) => setExperience(e.target.value as any)}
-                        className="w-full bg-[#050505] border border-[#222222] rounded-xl px-3 py-2.5 text-xs text-slate-200 outline-none"
+                        className="w-full bg-[#050505] border border-[#222222] rounded-xl px-3 py-3 text-sm text-slate-200 outline-none"
                       >
                         <option value="beginner">Beginner (New to workout)</option>
                         <option value="intermediate">Intermediate (Occasional workout)</option>
@@ -688,7 +691,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
                       <select
                         value={durationMin}
                         onChange={(e) => setDurationMin(Number(e.target.value))}
-                        className="w-full bg-[#050505] border border-[#222222] rounded-xl px-3 py-2.5 text-xs text-slate-200 outline-none"
+                        className="w-full bg-[#050505] border border-[#222222] rounded-xl px-3 py-3 text-sm text-slate-200 outline-none"
                       >
                         <option value={15}>15 Minutes Daily</option>
                         <option value={30}>30 Minutes Daily</option>
@@ -709,7 +712,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
                       placeholder="e.g. Knee discomfort, lower back strain, wrist pain..."
                       value={medicalLimitations}
                       onChange={(e) => setMedicalLimitations(e.target.value)}
-                      className="w-full bg-[#050505] border border-[#222222] focus:border-amber-500/60 rounded-xl p-3 text-white text-xs outline-none"
+                      className="w-full bg-[#050505] border border-[#222222] focus:border-amber-500/60 rounded-xl p-3.5 text-white text-sm outline-none"
                     />
                   </div>
                 </div>
@@ -735,11 +738,11 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
 
             {/* Carousel Footer Controls */}
             {cardIndex < 6 && (
-              <div className="flex items-center justify-between pt-4 border-t border-[#222222] mt-4">
+              <div className="flex items-center justify-between pt-4 border-t border-[#222222] mt-4 gap-3">
                 {cardIndex > 0 ? (
                   <button
                     onClick={handlePrevCard}
-                    className="px-5 py-2 rounded-xl bg-[#1a1a1a] hover:bg-[#222222] text-slate-300 font-semibold text-xs flex items-center gap-1.5 transition-colors border border-[#222222]"
+                    className="px-5 sm:px-6 py-3 rounded-xl bg-[#1a1a1a] hover:bg-[#222222] text-slate-300 font-semibold text-xs sm:text-sm flex items-center gap-1.5 transition-colors border border-[#222222]"
                   >
                     <ArrowLeft className="w-4 h-4" />
                     <span>Previous</span>
@@ -750,7 +753,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
 
                 <button
                   onClick={handleNextCard}
-                  className="px-6 py-2.5 rounded-xl bg-[#c6ff00] hover:bg-[#b0e600] text-black font-extrabold text-xs shadow-lg flex items-center gap-2 transition-all hover:scale-105 ml-auto"
+                  className="px-6 sm:px-8 py-3 rounded-xl bg-[#c6ff00] hover:bg-[#b0e600] text-black font-extrabold text-xs sm:text-sm shadow-lg flex items-center gap-2 transition-all hover:scale-105 ml-auto"
                 >
                   <span>{cardIndex === 5 ? "Generate Transformation Plan" : "Next Card"}</span>
                   <ArrowRight className="w-4 h-4 text-black" />

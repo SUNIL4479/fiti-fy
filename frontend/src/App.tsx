@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
-import { UserProfile, WorkoutPlan, Badge } from "./types";
+import { UserProfile, WorkoutPlan, Badge, WorkoutLog } from "./types";
 import { WorkoutService } from "./services/workoutService";
+import { computeBadges } from "./services/badgeService";
 
 // Components
 import { Navbar } from "./components/layout/Navbar";
@@ -23,8 +24,10 @@ export default function App() {
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
 
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [badges, setBadges] = useState<Badge[]>([]);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+
+  // Badges are derived live from profile data (streaks, workouts, calories, weight progress).
+  const badges: Badge[] = useMemo(() => (user ? computeBadges(user) : []), [user]);
 
   React.useEffect(() => {
     // Check auth session on mount
@@ -33,8 +36,6 @@ export default function App() {
       .then((data) => {
         if (data.success) {
           setUser(data.profile);
-          // Badges would typically be computed or fetched here, for now empty or load from profile
-          setBadges(data.profile.badges || []); 
           setActiveTab("dashboard");
         }
       })
@@ -70,9 +71,20 @@ export default function App() {
   const handleFinishWorkout = (caloriesBurned: number, minutesSpent: number) => {
     setActiveWorkout(null);
     if (!user) return;
+    const today = new Date().toISOString().split("T")[0];
+    const workoutLog: WorkoutLog = {
+      id: `workout_${Date.now()}`,
+      date: today,
+      workoutTitle: activeWorkout?.title || "AI Guided Workout",
+      minutes: minutesSpent,
+      caloriesBurned,
+      exercisesCompleted: activeWorkout ? activeWorkout.mainRoutine.length : 0,
+      intensity: user.recommendedIntensity || "Moderate",
+    };
     const updated = {
       ...user,
       xp: user.xp + 150,
+      workoutLogs: [...(user.workoutLogs || []), workoutLog],
     };
     saveProfile(updated);
     setActiveTab("dashboard");
@@ -91,10 +103,16 @@ export default function App() {
     if (!user) return;
     const heightM = user.heightCm / 100;
     const newBmi = parseFloat((newWeightKg / (heightM * heightM)).toFixed(1));
+    const today = new Date().toISOString().split("T")[0];
+    const existingLogs = user.weightLogs || [];
+    const weightLogs = existingLogs.some((l) => l.date === today)
+      ? existingLogs.map((l) => (l.date === today ? { ...l, weightKg: newWeightKg } : l))
+      : [...existingLogs, { date: today, weightKg: newWeightKg }];
     const updated = {
       ...user,
       weightKg: newWeightKg,
       bmi: newBmi,
+      weightLogs,
     };
     saveProfile(updated);
   };
@@ -107,7 +125,11 @@ export default function App() {
   const showLanding = !user || activeTab === "landing";
 
   if (isLoadingAuth) {
-    return <div className="min-h-screen bg-[#050505]/70 flex items-center justify-center text-[#c6ff00]">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-[#050505]/70 flex items-center justify-center text-[#c6ff00] text-sm sm:text-base">
+        Loading...
+      </div>
+    );
   }
 
   return (

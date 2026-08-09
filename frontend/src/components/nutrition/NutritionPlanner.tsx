@@ -74,8 +74,8 @@ export const NutritionPlanner: React.FC<NutritionPlannerProps> = ({ user }) => {
             <Apple className="w-4 h-4 text-[#c6ff00]" />
             <span>AI Smart Nutrition Coach</span>
           </div>
-          <h1 className="text-3xl font-extrabold text-white mt-1">Daily Meal & Macro Planner</h1>
-          <p className="text-slate-300 text-sm">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white mt-1">Daily Meal & Macro Planner</h1>
+          <p className="text-slate-300 text-xs sm:text-sm">
             AI-designed nutrition plans aligned with your dietary preference ({user.diet.toUpperCase()}) and fitness goal.
           </p>
         </div>
@@ -100,22 +100,22 @@ export const NutritionPlanner: React.FC<NutritionPlannerProps> = ({ user }) => {
       </div>
 
       {/* Macro Target Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-[#111111] border border-[#222222] p-6 rounded-[24px]">
-          <div className="text-xs text-[#666666] font-semibold uppercase tracking-wider">Daily Calories</div>
-          <div className="text-3xl font-bold text-white mt-1">{mealPlan.dailyCalories} kcal</div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        <div className="bg-[#111111] border border-[#222222] p-5 sm:p-6 rounded-[24px]">
+          <div className="text-[10px] sm:text-xs text-[#666666] font-semibold uppercase tracking-wider">Daily Calories</div>
+          <div className="text-2xl sm:text-3xl font-bold text-white mt-1">{mealPlan.dailyCalories} kcal</div>
         </div>
-        <div className="bg-[#111111] border border-[#222222] p-6 rounded-[24px]">
-          <div className="text-xs text-[#666666] font-semibold uppercase tracking-wider">Protein Target</div>
-          <div className="text-3xl font-bold text-[#c6ff00] mt-1">{mealPlan.proteinGrams}g</div>
+        <div className="bg-[#111111] border border-[#222222] p-5 sm:p-6 rounded-[24px]">
+          <div className="text-[10px] sm:text-xs text-[#666666] font-semibold uppercase tracking-wider">Protein Target</div>
+          <div className="text-2xl sm:text-3xl font-bold text-[#c6ff00] mt-1">{mealPlan.proteinGrams}g</div>
         </div>
-        <div className="bg-[#111111] border border-[#222222] p-6 rounded-[24px]">
-          <div className="text-xs text-[#666666] font-semibold uppercase tracking-wider">Carbohydrates</div>
-          <div className="text-3xl font-bold text-sky-400 mt-1">{mealPlan.carbsGrams}g</div>
+        <div className="bg-[#111111] border border-[#222222] p-5 sm:p-6 rounded-[24px]">
+          <div className="text-[10px] sm:text-xs text-[#666666] font-semibold uppercase tracking-wider">Carbohydrates</div>
+          <div className="text-2xl sm:text-3xl font-bold text-sky-400 mt-1">{mealPlan.carbsGrams}g</div>
         </div>
-        <div className="bg-[#111111] border border-[#222222] p-6 rounded-[24px]">
-          <div className="text-xs text-[#666666] font-semibold uppercase tracking-wider">Healthy Fats</div>
-          <div className="text-3xl font-bold text-amber-400 mt-1">{mealPlan.fatsGrams}g</div>
+        <div className="bg-[#111111] border border-[#222222] p-5 sm:p-6 rounded-[24px]">
+          <div className="text-[10px] sm:text-xs text-[#666666] font-semibold uppercase tracking-wider">Healthy Fats</div>
+          <div className="text-2xl sm:text-3xl font-bold text-amber-400 mt-1">{mealPlan.fatsGrams}g</div>
         </div>
       </div>
 

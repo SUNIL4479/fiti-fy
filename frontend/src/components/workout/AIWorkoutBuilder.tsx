@@ -75,8 +75,8 @@ export const AIWorkoutBuilder: React.FC<AIWorkoutBuilderProps> = ({ user, onLaun
           <Bot className="w-4 h-4" />
           <span>Generative AI Routine Architect</span>
         </div>
-        <h1 className="text-3xl font-extrabold text-white">AI Home Workout Studio</h1>
-        <p className="text-slate-300 text-sm max-w-2xl">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white">AI Home Workout Studio</h1>
+        <p className="text-slate-300 text-xs sm:text-sm max-w-2xl">
           Describe what you want to work on today, your time limit, or any soreness/pain. Gemini will construct a zero-equipment routine tailored to your body.
         </p>
       </div>
@@ -98,7 +98,7 @@ export const AIWorkoutBuilder: React.FC<AIWorkoutBuilderProps> = ({ user, onLaun
             <button
               onClick={() => handleGenerate()}
               disabled={loading || !prompt.trim()}
-              className="absolute bottom-3 right-3 px-5 py-2 rounded-xl bg-[#c6ff00] hover:bg-[#b0e600] disabled:opacity-50 text-black font-bold text-xs flex items-center gap-1.5 shadow-md"
+              className="absolute bottom-3 right-3 px-5 py-2.5 rounded-xl bg-[#c6ff00] hover:bg-[#b0e600] disabled:opacity-50 text-black font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-md"
             >
               {loading ? (
                 <>
@@ -164,8 +164,8 @@ export const AIWorkoutBuilder: React.FC<AIWorkoutBuilderProps> = ({ user, onLaun
                   {generatedWorkout.difficulty}
                 </span>
               </div>
-              <h2 className="text-2xl font-black text-white">{generatedWorkout.title}</h2>
-              <p className="text-slate-300 text-sm mt-1">{generatedWorkout.description}</p>
+              <h2 className="text-xl sm:text-2xl font-black text-white">{generatedWorkout.title}</h2>
+              <p className="text-slate-300 text-xs sm:text-sm mt-1">{generatedWorkout.description}</p>
             </div>
 
             <button
@@ -216,7 +216,7 @@ export const AIWorkoutBuilder: React.FC<AIWorkoutBuilderProps> = ({ user, onLaun
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Eye className="w-4 h-4 text-[#c6ff00]" />
-                  <h3 className="text-sm font-extrabold text-white">
+                  <h3 className="text-sm sm:text-base font-extrabold text-white">
                     Exercise Form Demonstration:{" "}
                     <span className="text-[#c6ff00]">
                       {generatedWorkout.mainRoutine[selectedPreviewIndex]?.name || generatedWorkout.mainRoutine[0].name}
@@ -241,7 +241,7 @@ export const AIWorkoutBuilder: React.FC<AIWorkoutBuilderProps> = ({ user, onLaun
                   generatedWorkout.mainRoutine[selectedPreviewIndex]?.targetMuscles ||
                   generatedWorkout.mainRoutine[0].targetMuscles
                 }
-                className="w-full h-80 sm:h-96"
+                className="w-full h-80 sm:h-[440px] lg:h-[500px]"
               />
             </div>
           )}

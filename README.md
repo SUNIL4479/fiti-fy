@@ -60,6 +60,8 @@ FitiFI/
 │   ├── src/
 │   │   ├── app.ts           # Express app (auth, Gemini, ExerciseDB routes)
 │   │   └── server.ts        # Local dev server entrypoint
+│   ├── vercel.json          # Backend-only Vercel config (serverless function)
+│   ├── package-lock.json    # Standalone lockfile for deterministic backend installs
 │   └── package.json         # Backend dependencies & scripts
 ├── frontend/            # React + Vite frontend
 │   ├── src/
@@ -83,11 +85,14 @@ FitiFI/
 │   │   └── index.css         # Global styles
 │   ├── index.html
 │   ├── vite.config.ts        # Vite config + /api dev proxy
+│   ├── vercel.json           # Frontend-only Vercel config (static + /api edge proxy)
+│   ├── package-lock.json     # Standalone lockfile for deterministic frontend installs
 │   └── package.json          # Frontend dependencies & scripts
-├── vercel.json          # Vercel build + route configuration
+├── vercel.json          # Legacy single-project (monolith) Vercel config
 ├── tsconfig.json        # TypeScript configuration (root)
 ├── package.json         # npm workspaces (backend + frontend) & scripts
 ├── .env / .env.example  # Environment variables
+├── DEPLOYMENT.md        # Two-project Vercel deployment runbook
 └── .gitignore
 ```
 
@@ -173,24 +178,27 @@ APP_URL="http://localhost:3000"
 
 ## Deploying to Vercel
 
-The repo is configured for Vercel via `vercel.json` using the `builds` configuration:
+The project deploys as **two separate Vercel projects** — frontend and backend each on their own domain.
 
-- `backend/api/index.ts` — the Express app exported as a serverless function (built by `@vercel/node`).
-- `frontend/package.json` — the Vite frontend built as static output by `@vercel/static-build` (output: `frontend/dist/`).
-- Routes: `/api/*` requests go to the serverless function; all other routes fall back to the SPA (`/index.html`).
+| Project | Root Directory | Build |
+|---|---|---|
+| **fitify-backend** | `backend/` | Express API as a serverless function (`@vercel/node`) |
+| **fitify-frontend** | `frontend/` | Static Vite site (`vite build` → `dist/`) |
+
+The frontend keeps using relative `/api/*` calls and **Vercel's edge network proxies them to the backend** (see `frontend/vercel.json`) — no CORS, no cross-site cookie issues, no code changes. Each subfolder has its own `vercel.json` and `package-lock.json` for deterministic, error-free builds.
+
+> **⚠️ Important:** after creating the backend project, replace the `YOUR-BACKEND-PROJECT.vercel.app` placeholder in `frontend/vercel.json` with the real backend URL.
 
 ### Steps
 
-1. Push the repo to GitHub and import it in Vercel (or run `vercel` CLI from the project root). Set the project Root Directory to the repo root (`FitiFI/`).
-2. In **Settings → Environment Variables**, add:
-   - `GEMINI_API_KEY`
-   - `MONGODB_URI`
-   - `SESSION_SECRET`
-3. Deploy. No build command or output directory needs to be set manually — the `builds` config in `vercel.json` handles it.
+1. **Backend project:** Import the repo, set **Root Directory = `backend`**, add env vars (`GEMINI_API_KEY`, `MONGODB_URI`, `SESSION_SECRET`, `APP_URL`), set **Node.js Version = 24.x**, deploy. Verify `https://<backend>/api/health`.
+2. **Frontend project:** Import the repo, set **Root Directory = `frontend`**, set **Node.js Version = 24.x**, deploy. No env vars needed.
 
-> **Node.js version:** The root `package.json` pins `"engines": { "node": "24.x" }`. This forces Vercel to build and run on Node.js 24 (Node 20 is deprecated on Vercel and its builds will start failing after 2026-10-01). For extra safety you can also set **Settings → Build and Deployment → Node.js Version → 24.x** in the Vercel dashboard.
+Full walkthrough: see **[DEPLOYMENT.md](./DEPLOYMENT.md)**.
+
+> **Node.js version:** Each subproject pins `"engines": { "node": "24.x" }`. Node 20 is deprecated on Vercel and its builds will start failing after 2026-10-01 — keep 24.x selected in **Settings → Build and Deployment → Node.js Version**.
 >
-> Note: On Vercel the function runs on the `/api` route. The auth cookie is signed and stateless, so it works across serverless instances (no server-side session store needed).
+> Note: The auth cookie is signed and stateless, so it works across serverless instances (no server-side session store needed). The root `vercel.json` still supports a legacy single-project (monolith) deploy from the repo root.
 
 ---
 

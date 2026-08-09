@@ -99,13 +99,13 @@ export const AICoachChat: React.FC<AICoachChatProps> = ({ user, embedded = false
           <Bot className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-2xl font-extrabold text-white">24/7 AI Fitness Coach</h1>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-white">24/7 AI Fitness Coach</h1>
           <p className="text-xs text-slate-400">Personalized exercise, form & recovery assistance</p>
         </div>
       </div>
 
       {/* Chat Window */}
-      <div className={`bg-[#111111] border border-[#222222] rounded-[24px] flex flex-col overflow-hidden shadow-2xl ${embedded ? "flex-1 min-h-0" : "h-[480px]"}`}>
+      <div className={`bg-[#111111] border border-[#222222] rounded-[24px] flex flex-col overflow-hidden shadow-2xl ${embedded ? "flex-1 min-h-0" : "h-[480px] sm:h-[560px] lg:h-[620px]"}`}>
         {/* Messages Stream */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
           {messages.map((msg) => (

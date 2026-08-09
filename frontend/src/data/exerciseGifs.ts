@@ -19,12 +19,12 @@ let isFetchingDb = false;
 // Curated high-resolution ExerciseDB exercise GIFs using real ExerciseDB IDs and URLs
 export const EXERCISE_DB_CATALOG: Record<string, ExerciseDBItem> = {
   pushup: {
-    id: "13TpY4H",
-    name: "Standard Push-Up",
+    id: "I4hDWkc",
+    name: "Push-Up",
     target: "Pectorals (Chest)",
     bodyPart: "Chest",
     equipment: "Body Weight",
-    gifUrl: "https://static.exercisedb.dev/media/13TpY4H.gif",
+    gifUrl: "https://static.exercisedb.dev/media/I4hDWkc.gif",
     secondaryMuscles: ["Triceps", "Front Deltoids", "Core"],
     instructions: [
       "Place hands slightly wider than shoulder-width apart.",
@@ -33,12 +33,12 @@ export const EXERCISE_DB_CATALOG: Record<string, ExerciseDBItem> = {
     ]
   },
   squat: {
-    id: "13VW2VO",
-    name: "Bodyweight Air Squat",
+    id: "QChZi3x",
+    name: "Squat to Overhead Reach",
     target: "Quadriceps & Glutes",
     bodyPart: "Upper Legs",
     equipment: "Body Weight",
-    gifUrl: "https://static.exercisedb.dev/media/13VW2VO.gif",
+    gifUrl: "https://static.exercisedb.dev/media/QChZi3x.gif",
     secondaryMuscles: ["Hamstrings", "Calves", "Abs"],
     instructions: [
       "Stand with feet shoulder-width apart.",
@@ -47,12 +47,12 @@ export const EXERCISE_DB_CATALOG: Record<string, ExerciseDBItem> = {
     ]
   },
   plank: {
-    id: "11wrviz",
-    name: "Core Isometric Plank",
+    id: "hCjGsRQ",
+    name: "Power Point Plank",
     target: "Abs & Core Stabilizers",
     bodyPart: "Waist",
     equipment: "Body Weight",
-    gifUrl: "https://static.exercisedb.dev/media/11wrviz.gif",
+    gifUrl: "https://static.exercisedb.dev/media/hCjGsRQ.gif",
     secondaryMuscles: ["Shoulders", "Glutes"],
     instructions: [
       "Place forearms on the ground with elbows aligned below shoulders.",
@@ -61,12 +61,12 @@ export const EXERCISE_DB_CATALOG: Record<string, ExerciseDBItem> = {
     ]
   },
   lunge: {
-    id: "13VW2VO",
-    name: "Alternating Lunge",
+    id: "IZVHb27",
+    name: "Walking Lunge",
     target: "Quads, Glutes & Hamstrings",
     bodyPart: "Upper Legs",
     equipment: "Body Weight",
-    gifUrl: "https://static.exercisedb.dev/media/13VW2VO.gif",
+    gifUrl: "https://static.exercisedb.dev/media/IZVHb27.gif",
     secondaryMuscles: ["Calves", "Core"],
     instructions: [
       "Step forward with one leg and lower hips until both knees are bent at 90 degrees.",
@@ -75,12 +75,12 @@ export const EXERCISE_DB_CATALOG: Record<string, ExerciseDBItem> = {
     ]
   },
   jumping_jacks: {
-    id: "0Yz8WdV",
-    name: "Cardio Bear Crawl / Jumping Jacks",
+    id: "1g5bPpA",
+    name: "Jack Jump (Jumping Jacks)",
     target: "Cardiovascular Stamina",
     bodyPart: "Full Body",
     equipment: "Body Weight",
-    gifUrl: "https://static.exercisedb.dev/media/0Yz8WdV.gif",
+    gifUrl: "https://static.exercisedb.dev/media/1g5bPpA.gif",
     secondaryMuscles: ["Calves", "Shoulders"],
     instructions: [
       "Stand upright with feet together and arms at sides.",
@@ -89,12 +89,12 @@ export const EXERCISE_DB_CATALOG: Record<string, ExerciseDBItem> = {
     ]
   },
   mountain_climbers: {
-    id: "03lzqwk",
-    name: "High Pace Mountain Climbers",
+    id: "RJgzwny",
+    name: "Mountain Climber",
     target: "Abs & Hip Flexors",
     bodyPart: "Waist",
     equipment: "Body Weight",
-    gifUrl: "https://static.exercisedb.dev/media/03lzqwk.gif",
+    gifUrl: "https://static.exercisedb.dev/media/RJgzwny.gif",
     secondaryMuscles: ["Shoulders", "Chest", "Quads"],
     instructions: [
       "Start in a high push-up plank position.",
@@ -103,12 +103,12 @@ export const EXERCISE_DB_CATALOG: Record<string, ExerciseDBItem> = {
     ]
   },
   burpees: {
-    id: "0JtKWum",
-    name: "Full-Body Explosive Burpee",
+    id: "dK9394r",
+    name: "Burpee",
     target: "Cardio & Full Body Strength",
     bodyPart: "Full Body",
     equipment: "Body Weight",
-    gifUrl: "https://static.exercisedb.dev/media/0JtKWum.gif",
+    gifUrl: "https://static.exercisedb.dev/media/dK9394r.gif",
     secondaryMuscles: ["Chest", "Quads", "Abs"],
     instructions: [
       "Drop into a squat, place hands on floor and kick feet back into plank.",
@@ -117,12 +117,12 @@ export const EXERCISE_DB_CATALOG: Record<string, ExerciseDBItem> = {
     ]
   },
   crunch: {
-    id: "03lzqwk",
-    name: "Abdominal Knee Raise Crunch",
+    id: "TFqbd8t",
+    name: "Crunch (Floor)",
     target: "Rectus Abdominis",
     bodyPart: "Waist",
     equipment: "Body Weight",
-    gifUrl: "https://static.exercisedb.dev/media/03lzqwk.gif",
+    gifUrl: "https://static.exercisedb.dev/media/TFqbd8t.gif",
     secondaryMuscles: ["Obliques"],
     instructions: [
       "Lie on back with knees bent and feet flat.",
@@ -131,12 +131,12 @@ export const EXERCISE_DB_CATALOG: Record<string, ExerciseDBItem> = {
     ]
   },
   stretching: {
-    id: "01qpYSe",
-    name: "Upward Facing Dog Stretch",
+    id: "DFGXwZr",
+    name: "World Greatest Stretch",
     target: "Flexibility & Spine Extension",
     bodyPart: "Back & Core",
     equipment: "Body Weight",
-    gifUrl: "https://static.exercisedb.dev/media/01qpYSe.gif",
+    gifUrl: "https://static.exercisedb.dev/media/DFGXwZr.gif",
     secondaryMuscles: ["Hamstrings", "Spine", "Shoulders"],
     instructions: [
       "Inhale deeply and lengthen spine.",
@@ -176,7 +176,9 @@ export async function fetchLiveExerciseDBList(): Promise<ExerciseDBItem[]> {
   return liveExerciseDbCache;
 }
 
-// Helper function to resolve ExerciseDB GIF by name, animationType, or target muscle
+// Helper function to resolve ExerciseDB GIF by name, animationType, or target muscle.
+// The curated catalog is authoritative (verified GIFs); the live list is only used as a
+// strong-match fallback so we never swap in a wrong or broken movement.
 export function getExerciseDBGif(
   exerciseName: string,
   animationType?: string,
@@ -186,22 +188,12 @@ export function getExerciseDBGif(
   const animLower = (animationType || "").toLowerCase();
   const muscleLower = (targetMuscle || "").toLowerCase();
 
-  // Try live cache match first
-  if (liveExerciseDbCache.length > 0) {
-    const liveMatch = liveExerciseDbCache.find(ex => 
-      ex.name.toLowerCase().includes(nameLower) ||
-      ex.target.toLowerCase().includes(muscleLower) ||
-      (animationType && ex.name.toLowerCase().includes(animLower))
-    );
-    if (liveMatch) return liveMatch;
-  }
-
-  // Direct catalog key match
-  if (EXERCISE_DB_CATALOG[animLower]) {
+  // 1. Direct catalog key match (verified curated GIF)
+  if (animLower && EXERCISE_DB_CATALOG[animLower]) {
     return EXERCISE_DB_CATALOG[animLower];
   }
 
-  // Name search matching
+  // 2. Name search matching against the curated catalog
   if (nameLower.includes("push") || nameLower.includes("chest")) return EXERCISE_DB_CATALOG.pushup;
   if (nameLower.includes("squat") || nameLower.includes("leg")) return EXERCISE_DB_CATALOG.squat;
   if (nameLower.includes("plank") || nameLower.includes("core")) return EXERCISE_DB_CATALOG.plank;
@@ -212,10 +204,28 @@ export function getExerciseDBGif(
   if (nameLower.includes("crunch") || nameLower.includes("ab")) return EXERCISE_DB_CATALOG.crunch;
   if (nameLower.includes("stretch") || nameLower.includes("yoga") || nameLower.includes("warm")) return EXERCISE_DB_CATALOG.stretching;
 
-  // Muscle group fallback
+  // 3. Muscle group fallback against the curated catalog
   if (muscleLower.includes("chest") || muscleLower.includes("tricep")) return EXERCISE_DB_CATALOG.pushup;
   if (muscleLower.includes("quad") || muscleLower.includes("glute")) return EXERCISE_DB_CATALOG.squat;
   if (muscleLower.includes("abs") || muscleLower.includes("waist")) return EXERCISE_DB_CATALOG.plank;
+
+  // 4. Live cache as a last resort — only for strong, exact-ish matches so a wrong
+  //    animation (e.g. "weighted sissy squat" for a deep bodyweight squat) is never used.
+  if (liveExerciseDbCache.length > 0) {
+    const liveMatch = liveExerciseDbCache.find(
+      (ex) =>
+        ex.name.toLowerCase() === nameLower ||
+        ex.name.toLowerCase().includes(nameLower) ||
+        (muscleLower && ex.target.toLowerCase() === muscleLower) ||
+        (muscleLower &&
+          ex.target
+            .toLowerCase()
+            .split(",")
+            .map((t) => t.trim())
+            .includes(muscleLower.split(",")[0].trim()))
+    );
+    if (liveMatch) return liveMatch;
+  }
 
   return EXERCISE_DB_CATALOG.pushup;
 }

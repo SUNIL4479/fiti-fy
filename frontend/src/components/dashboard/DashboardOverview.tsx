@@ -76,10 +76,10 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               <span className="text-xs text-slate-400">XP: {user.xp} / 500</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-white">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white">
               Welcome back, <span className="text-[#c6ff00]">{user.name}</span>!
             </h1>
-            <p className="text-slate-300 text-sm max-w-xl">
+            <p className="text-slate-300 text-xs sm:text-sm max-w-xl">
               Your AI coach has optimized today's <span className="text-[#c6ff00] font-semibold">{recommendedWorkout.title}</span> session. Zero equipment required.
             </p>
           </div>
@@ -96,64 +96,64 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
       </div>
 
       {/* Top 4 Quick Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
         {/* Streak */}
-        <div className="bg-[#111111] border border-[#222222] p-6 rounded-[24px] flex items-center justify-between">
+        <div className="bg-[#111111] border border-[#222222] p-5 sm:p-6 rounded-[24px] flex items-center justify-between">
           <div>
-            <div className="text-xs font-semibold text-[#666666] uppercase tracking-wider">Workout Streak</div>
-            <div className="text-3xl font-bold text-white mt-1 flex items-baseline gap-1.5">
+            <div className="text-[10px] sm:text-xs font-semibold text-[#666666] uppercase tracking-wider">Workout Streak</div>
+            <div className="text-2xl sm:text-3xl font-bold text-white mt-1 flex items-baseline gap-1.5">
               <span>{user.streakDays || 1}</span>
               <span className="text-xs font-normal text-[#666666]">Days Active</span>
             </div>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
-            <Flame className="w-6 h-6 animate-pulse" />
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+            <Flame className="w-5 h-5 sm:w-6 sm:h-6 animate-pulse" />
           </div>
         </div>
 
         {/* Calories Burned */}
-        <div className="bg-[#111111] border border-[#222222] p-6 rounded-[24px] flex items-center justify-between">
+        <div className="bg-[#111111] border border-[#222222] p-5 sm:p-6 rounded-[24px] flex items-center justify-between">
           <div>
-            <div className="text-xs font-semibold text-[#666666] uppercase tracking-wider">Est. Calories Burned</div>
-            <div className="text-3xl font-bold text-[#c6ff00] mt-1 flex items-baseline gap-1.5">
+            <div className="text-[10px] sm:text-xs font-semibold text-[#666666] uppercase tracking-wider">Est. Calories Burned</div>
+            <div className="text-2xl sm:text-3xl font-bold text-[#c6ff00] mt-1 flex items-baseline gap-1.5">
               <span>{recommendedWorkout.estimatedCalories || 380}</span>
               <span className="text-xs font-normal text-[#666666]">kcal today</span>
             </div>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-[#c6ff00]/10 border border-[#c6ff00]/30 flex items-center justify-center text-[#c6ff00]">
-            <Zap className="w-6 h-6" />
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#c6ff00]/10 border border-[#c6ff00]/30 flex items-center justify-center text-[#c6ff00]">
+            <Zap className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
         </div>
 
         {/* Water Intake */}
-        <div className="bg-[#111111] border border-[#222222] p-6 rounded-[24px] flex items-center justify-between">
+        <div className="bg-[#111111] border border-[#222222] p-5 sm:p-6 rounded-[24px] flex items-center justify-between">
           <div>
-            <div className="text-xs font-semibold text-[#666666] uppercase tracking-wider">Water Hydration</div>
-            <div className="text-3xl font-bold text-sky-400 mt-1 flex items-baseline gap-1.5">
+            <div className="text-[10px] sm:text-xs font-semibold text-[#666666] uppercase tracking-wider">Water Hydration</div>
+            <div className="text-2xl sm:text-3xl font-bold text-sky-400 mt-1 flex items-baseline gap-1.5">
               <span>{(user.waterIntakeMl / 1000).toFixed(1)}</span>
               <span className="text-xs font-normal text-[#666666]">/ {user.waterGoalLiters || 3.0} L</span>
             </div>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
-            <Droplets className="w-6 h-6" />
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+            <Droplets className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
         </div>
 
         {/* Weight Tracker */}
-        <div className="bg-[#111111] border border-[#222222] p-6 rounded-[24px] flex items-center justify-between">
+        <div className="bg-[#111111] border border-[#222222] p-5 sm:p-6 rounded-[24px] flex items-center justify-between">
           <div>
-            <div className="text-xs font-semibold text-[#666666] uppercase tracking-wider">Current Weight</div>
-            <div className="text-3xl font-bold text-purple-400 mt-1 flex items-baseline gap-1.5">
+            <div className="text-[10px] sm:text-xs font-semibold text-[#666666] uppercase tracking-wider">Current Weight</div>
+            <div className="text-2xl sm:text-3xl font-bold text-purple-400 mt-1 flex items-baseline gap-1.5">
               <span>{user.weightKg}</span>
               <span className="text-xs font-normal text-[#666666]">kg</span>
             </div>
           </div>
           <button
             onClick={() => setShowWeightModal(true)}
-            className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 flex items-center justify-center text-purple-400 transition-colors"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 flex items-center justify-center text-purple-400 transition-colors"
             title="Log new weight"
           >
-            <Scale className="w-5 h-5" />
+            <Scale className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
       </div>
@@ -168,10 +168,10 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               </span>
               <span className="text-xs text-slate-400 font-mono">Current: {user.bodyType || "Athletic"}</span>
             </div>
-            <h3 className="text-xl font-extrabold text-white">
+            <h3 className="text-lg sm:text-xl font-extrabold text-white">
               Target Goal: <span className="text-[#c6ff00]">{user.targetBodyType}</span>
             </h3>
-            <p className="text-xs text-slate-300 max-w-xl">
+            <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
               Daily home workout schedule maintained to complete your {user.transformationMonths || 5}-month transformation timeline safely without gym equipment.
             </p>
           </div>
@@ -242,7 +242,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                 <Dumbbell className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-white">Today's Workout Program</h3>
+                <h3 className="text-lg sm:text-xl font-bold text-white">Today's Workout Program</h3>
                 <p className="text-xs text-slate-400">AI Customized for {user.goal.replace("_", " ")}</p>
               </div>
             </div>
@@ -255,7 +255,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
           <div className="p-5 rounded-2xl bg-[#0a0a0a] border border-[#222222] space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <div className="text-lg font-bold text-white">{recommendedWorkout.title}</div>
+                <div className="text-base sm:text-lg font-bold text-white">{recommendedWorkout.title}</div>
                 <div className="text-xs text-slate-400 mt-0.5">{recommendedWorkout.description}</div>
               </div>
               <div className="flex items-center gap-2">
@@ -315,20 +315,20 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               />
             </div>
 
-            <div className="flex justify-between items-center pt-2">
+            <div className="flex justify-between items-center pt-2 gap-2">
               <button
                 onClick={() => onUpdateWater(250)}
-                className="px-4 py-2 rounded-xl bg-[#1a1a1a] hover:bg-[#222222] border border-[#222222] text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                className="flex-1 px-4 py-3 rounded-xl bg-[#1a1a1a] hover:bg-[#222222] border border-[#222222] text-slate-200 text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>+250 ml Glass</span>
+                <span>+250 ml</span>
               </button>
               <button
                 onClick={() => onUpdateWater(500)}
-                className="px-4 py-2 rounded-xl bg-[#1a1a1a] hover:bg-[#222222] border border-[#222222] text-[#c6ff00] text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                className="flex-1 px-4 py-3 rounded-xl bg-[#1a1a1a] hover:bg-[#222222] border border-[#222222] text-[#c6ff00] text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>+500 ml Bottle</span>
+                <span>+500 ml</span>
               </button>
             </div>
           </div>
