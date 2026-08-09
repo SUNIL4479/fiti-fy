@@ -75,18 +75,20 @@ const readCookie = (req: express.Request, name: string): string | undefined => {
 
 const setSessionCookie = (res: express.Response, userId: string) => {
   const token = signToken(userId);
-  const secure = process.env.NODE_ENV === "production";
+  const secure = process.env.NODE_ENV === "production" || process.env.RENDER === "true";
+  const sameSite = secure ? "None" : "Lax";
   res.setHeader(
     "Set-Cookie",
-    `${SESSION_COOKIE}=${token}; HttpOnly; Path=/; Max-Age=${SESSION_MAX_AGE_SEC}; SameSite=Lax${secure ? "; Secure" : ""}`
+    `${SESSION_COOKIE}=${token}; HttpOnly; Path=/; Max-Age=${SESSION_MAX_AGE_SEC}; SameSite=${sameSite}${secure ? "; Secure" : ""}`
   );
 };
 
 const clearSessionCookie = (res: express.Response) => {
-  const secure = process.env.NODE_ENV === "production";
+  const secure = process.env.NODE_ENV === "production" || process.env.RENDER === "true";
+  const sameSite = secure ? "None" : "Lax";
   res.setHeader(
     "Set-Cookie",
-    `${SESSION_COOKIE}=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax${secure ? "; Secure" : ""}`
+    `${SESSION_COOKIE}=; HttpOnly; Path=/; Max-Age=0; SameSite=${sameSite}${secure ? "; Secure" : ""}`
   );
 };
 

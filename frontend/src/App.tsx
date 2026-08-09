@@ -33,9 +33,13 @@ export default function App() {
   React.useEffect(() => {
     // Check auth session on mount
     apiFetch("auth/me")
-      .then((res) => res.json())
+      .then(async (res) => {
+        if (res.status === 401) return null;
+        if (!res.ok) throw new Error(`Auth check failed with status ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
-        if (data.success) {
+        if (data?.success) {
           setUser(data.profile);
           setActiveTab("dashboard");
         }
