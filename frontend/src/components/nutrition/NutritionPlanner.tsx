@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { UserProfile, MealPlan } from "../../types";
+import { apiFetch } from "../../services/api";
 import { Activity, Apple, Sparkles, Loader2, RefreshCw, Droplets, Utensils, CheckCircle2 } from "lucide-react";
 
 interface NutritionPlannerProps {
@@ -50,7 +51,7 @@ export const NutritionPlanner: React.FC<NutritionPlannerProps> = ({ user }) => {
   const handleGenerateMealPlan = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/ai/generate-nutrition", {
+      const res = await apiFetch("ai/generate-nutrition", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ profile: user }),

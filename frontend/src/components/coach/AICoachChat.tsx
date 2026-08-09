@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { UserProfile } from "../../types";
+import { apiFetch } from "../../services/api";
 import { Bot, Send, User, Sparkles, Loader2, Dumbbell, ShieldAlert, HeartPulse } from "lucide-react";
 
 interface AICoachChatProps {
@@ -59,7 +60,7 @@ export const AICoachChat: React.FC<AICoachChatProps> = ({ user, embedded = false
         text: m.text,
       }));
 
-      const res = await fetch("/api/ai/coach-chat", {
+      const res = await apiFetch("ai/coach-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

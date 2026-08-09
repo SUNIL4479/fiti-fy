@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { UserProfile } from "../../types";
+import { apiFetch } from "../../services/api";
 import logo from "../../assets/images/logo.png";
 import {
   Flame,
@@ -96,7 +97,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
               <button
                 onClick={() => {
-                  fetch("/api/auth/signout", { method: "POST" })
+                  apiFetch("auth/signout", { method: "POST" })
                     .then(() => window.location.reload());
                 }}
                 className="p-2.5 rounded-xl bg-[#111111] hover:bg-rose-500/10 border border-[#222222] hover:border-rose-500/30 text-slate-300 hover:text-rose-400 text-xs lg:text-sm font-semibold"
@@ -154,7 +155,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </button>
                   <button
                     onClick={() => {
-                      fetch("/api/auth/signout", { method: "POST" })
+                      apiFetch("auth/signout", { method: "POST" })
                         .then(() => window.location.reload());
                     }}
                     className="px-3 py-2.5 rounded-xl bg-white/5 hover:bg-rose-500/10 border border-white/10 text-slate-300 hover:text-rose-400 text-sm font-semibold"

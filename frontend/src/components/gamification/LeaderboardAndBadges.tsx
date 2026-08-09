@@ -1,5 +1,6 @@
 import React from "react";
 import { UserProfile, Badge } from "../../types";
+import { apiFetch } from "../../services/api";
 import {
   Award,
   Flame,
@@ -60,7 +61,7 @@ export const LeaderboardAndBadges: React.FC<LeaderboardAndBadgesProps> = ({ user
   const [leaderboardData, setLeaderboardData] = React.useState<any[]>([]);
 
   React.useEffect(() => {
-    fetch("/api/leaderboard")
+    apiFetch("leaderboard")
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {

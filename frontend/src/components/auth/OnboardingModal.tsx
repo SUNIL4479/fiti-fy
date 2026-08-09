@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { UserProfile, FitnessGoal, ExperienceLevel, DietaryPreference } from "../../types";
+import { apiFetch } from "../../services/api";
 import {
   Sparkles,
   ArrowRight,
@@ -72,7 +73,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/signin", {
+      const res = await apiFetch("auth/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -124,7 +125,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
     setLoading(true);
 
     try {
-      const res = await fetch("/api/ai/fitness-profile", {
+      const res = await apiFetch("ai/fitness-profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -188,7 +189,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, on
       };
 
       // Signup API call
-      const authRes = await fetch("/api/auth/signup", {
+      const authRes = await apiFetch("auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, profile: newProfile }),

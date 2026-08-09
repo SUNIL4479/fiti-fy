@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { UserProfile, WorkoutPlan, Exercise } from "../../types";
+import { apiFetch } from "../../services/api";
 import { Exercise3DVisualizer } from "../3d/Exercise3DVisualizer";
 import { Sparkles, Play, Bot, Loader2, Dumbbell, ShieldCheck, Flame, Clock, Zap, Eye, CheckCircle2 } from "lucide-react";
 
@@ -31,7 +32,7 @@ export const AIWorkoutBuilder: React.FC<AIWorkoutBuilderProps> = ({ user, onLaun
     setErrorMsg("");
 
     try {
-      const res = await fetch("/api/ai/generate-workout", {
+      const res = await apiFetch("ai/generate-workout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

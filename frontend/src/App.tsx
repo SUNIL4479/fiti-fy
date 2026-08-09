@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { UserProfile, WorkoutPlan, Badge, WorkoutLog } from "./types";
 import { WorkoutService } from "./services/workoutService";
 import { computeBadges } from "./services/badgeService";
+import { apiFetch } from "./services/api";
 
 // Components
 import { Navbar } from "./components/layout/Navbar";
@@ -31,7 +32,7 @@ export default function App() {
 
   React.useEffect(() => {
     // Check auth session on mount
-    fetch("/api/auth/me")
+    apiFetch("auth/me")
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
@@ -46,7 +47,7 @@ export default function App() {
   const saveProfile = async (updatedProfile: UserProfile) => {
     setUser(updatedProfile);
     try {
-      await fetch("/api/auth/profile", {
+      await apiFetch("auth/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ profile: updatedProfile }),
