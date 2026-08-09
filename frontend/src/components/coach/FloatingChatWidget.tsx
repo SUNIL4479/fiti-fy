@@ -32,7 +32,7 @@ export const FloatingChatWidget: React.FC<FloatingChatWidgetProps> = ({ user, op
   return (
     <>
       {open && (
-        <div className="fixed bottom-23 right-3 sm:right-8 z-40 w-[calc(100vw-1.5rem)] sm:w-[calc(100vw-4rem)] max-w-md h-[75vh] sm:h-[70vh] max-h-[600px] bg-[#0f0f0f] border border-[#222222] rounded-[24px] overflow-hidden shadow-2xl flex flex-col animate-fade-in">
+        <div className="fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom))] right-3 sm:bottom-24 sm:right-8 z-40 w-[calc(100vw-1.5rem)] sm:w-[calc(100vw-4rem)] max-w-md h-[min(70dvh,600px)] sm:h-[70vh] bg-[#0f0f0f] border border-[#222222] rounded-[24px] overflow-hidden shadow-2xl flex flex-col animate-fade-in">
           <AICoachChat user={chatUser} embedded />
         </div>
       )}
@@ -41,7 +41,7 @@ export const FloatingChatWidget: React.FC<FloatingChatWidgetProps> = ({ user, op
         onClick={onToggle}
         aria-label={open ? "Close AI Coach Chat" : "Open AI Coach Chat"}
         title="AI Coach Chat"
-        className="fixed bottom-3 right-3 sm:right-8 z-40 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#c6ff00] hover:bg-[#b0e600] text-black flex items-center justify-center shadow-xl shadow-[#c6ff00]/25 transition-all hover:scale-105"
+        className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 sm:bottom-6 sm:right-8 z-40 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#c6ff00] hover:bg-[#b0e600] text-black flex items-center justify-center shadow-xl shadow-[#c6ff00]/25 transition-all hover:scale-105"
       >
         {open ? <X className="w-6 h-6 sm:w-7 sm:h-7" /> : <Bot className="w-7 h-7 sm:w-8 sm:h-8" />}
         {!open && (

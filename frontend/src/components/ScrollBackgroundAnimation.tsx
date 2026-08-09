@@ -6,102 +6,163 @@ const frameModules = import.meta.glob("../assets/pushup_frames/*.jpg", {
   import: "default",
 }) as Record<string, string>;
 
-const FRAME_URLS = Object.keys(frameModules)
+const ALL_FRAME_URLS = Object.keys(frameModules)
   .sort(
     (a, b) =>
       Number(a.match(/\d+/)?.[0] ?? 0) - Number(b.match(/\d+/)?.[0] ?? 0)
   )
   .map((key) => frameModules[key]);
 
-const EASE = 0.2;
-const CONCURRENCY = 14;
+type DeviceNavigator = Navigator & {
+  deviceMemory?: number;
+  connection?: { saveData?: boolean };
+};
 
 export const ScrollBackgroundAnimation: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const framesRef = useRef<(HTMLImageElement | null)[]>([]);
-  const statusRef = useRef<number[]>([]); // 0 loading, 1 ok, 2 error
-  const targetRef = useRef(0); // scroll-derived target frame (float)
-  const shownRef = useRef(0); // eased frame currently displayed (float)
-
-  // Draw the frame closest to the displayed position that is actually loaded,
-  // so the animation fills in progressively while preloading.
-  const draw = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const target = Math.round(shownRef.current);
-    if (target < 0) return;
-    let index = target;
-    while (index >= 0 && statusRef.current[index] !== 1) index -= 1;
-    if (index < 0) return;
-    const img = framesRef.current[index];
-    if (!img || !img.naturalWidth) return;
-
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const vw = canvas.width / dpr;
-    const vh = canvas.height / dpr;
-    const imgRatio = img.naturalWidth / img.naturalHeight;
-    const viewRatio = vw / vh;
-
-    let sx = 0;
-    let sy = 0;
-    let sw = img.naturalWidth;
-    let sh = img.naturalHeight;
-    if (imgRatio > viewRatio) {
-      sw = sh * viewRatio;
-      sx = (img.naturalWidth - sw) / 2;
-    } else {
-      sh = sw / viewRatio;
-      sy = (img.naturalHeight - sh) / 2;
-    }
-
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
-  };
+  const statusRef = useRef<number[]>([]); // 0 idle, -1 loading, 1 ready, 2 failed
+  const targetRef = useRef(0);
+  const shownRef = useRef(0);
+  const lastDrawnRef = useRef(-1);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const count = FRAME_URLS.length;
+    const device = navigator as DeviceNavigator;
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const lowMemory = (device.deviceMemory ?? 8) <= 4 || device.connection?.saveData === true;
+    const constrained = isMobile || lowMemory || prefersReducedMotion;
+
+    // A phone needs far fewer frames than a desktop to look fluid, and limiting the
+    // sequence keeps decoded images from consuming hundreds of MB of RAM.
+    const frameLimit = constrained ? 54 : 150;
+    const frameStep = Math.max(1, Math.ceil(ALL_FRAME_URLS.length / frameLimit));
+    const frameUrls = ALL_FRAME_URLS.filter(
+      (_, index) => index % frameStep === 0 || index === ALL_FRAME_URLS.length - 1
+    );
+    const count = frameUrls.length;
+    const concurrency = constrained ? 2 : 5;
+    const easing = constrained ? 1 : 0.2;
+    const fitEntireFrame = isMobile;
+
+    contextRef.current = canvas.getContext("2d", { alpha: false });
+    const ctx = contextRef.current;
+    if (!ctx) return;
+
     statusRef.current = new Array(count).fill(0);
     framesRef.current = new Array(count).fill(null);
     targetRef.current = 0;
     shownRef.current = 0;
+    lastDrawnRef.current = -1;
     let cancelled = false;
     let rafId = 0;
+    let resizeRafId = 0;
+    let activeLoads = 0;
+    let nextFrameToLoad = 0;
+
+    const draw = (force = false) => {
+      const target = Math.round(shownRef.current);
+      let index = target;
+      while (index >= 0 && statusRef.current[index] !== 1) index -= 1;
+      if (index < 0) return;
+      if (!force && lastDrawnRef.current === index) return;
+
+      const image = framesRef.current[index];
+      if (!image?.naturalWidth) return;
+
+      const imageRatio = image.naturalWidth / image.naturalHeight;
+      const canvasRatio = canvas.width / canvas.height;
+      let sx = 0;
+      let sy = 0;
+      let sw = image.naturalWidth;
+      let sh = image.naturalHeight;
+      let dx = 0;
+      let dy = 0;
+      let dw = canvas.width;
+      let dh = canvas.height;
+
+      if (fitEntireFrame) {
+        // Never crop the workout movement on a narrow screen.
+        if (imageRatio > canvasRatio) {
+          dh = canvas.width / imageRatio;
+          dy = (canvas.height - dh) / 2;
+        } else {
+          dw = canvas.height * imageRatio;
+          dx = (canvas.width - dw) / 2;
+        }
+      } else if (imageRatio > canvasRatio) {
+        sw = sh * canvasRatio;
+        sx = (image.naturalWidth - sw) / 2;
+      } else {
+        sh = sw / canvasRatio;
+        sy = (image.naturalHeight - sh) / 2;
+      }
+
+      ctx.imageSmoothingEnabled = !constrained;
+      if (!constrained) ctx.imageSmoothingQuality = "medium";
+      ctx.fillStyle = "#050505";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+      lastDrawnRef.current = index;
+    };
 
     const resize = () => {
-      if (window.innerWidth === 0 || window.innerHeight === 0) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (!window.innerWidth || !window.innerHeight) return;
+      // Rendering at native DPR on small screens creates a very large canvas. A
+      // single physical pixel is sharper enough for a background and much cheaper.
+      const dpr = constrained ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
       canvas.width = Math.max(1, Math.round(window.innerWidth * dpr));
       canvas.height = Math.max(1, Math.round(window.innerHeight * dpr));
-      draw();
+      lastDrawnRef.current = -1;
+      draw(true);
     };
 
     const updateFromScroll = () => {
       const doc = document.documentElement;
-      const max =
-        Math.max(doc.scrollHeight, document.body.scrollHeight) - window.innerHeight;
-      const progress =
-        max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      const max = Math.max(doc.scrollHeight, document.body.scrollHeight) - window.innerHeight;
+      const progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
       targetRef.current = progress * (count - 1);
     };
 
-    // Eased scrub loop: frames glide toward the scroll target and stop when idle.
+    const loadNext = () => {
+      while (!cancelled && activeLoads < concurrency && nextFrameToLoad < count) {
+        const index = nextFrameToLoad++;
+        const image = new Image();
+        image.decoding = "async";
+        statusRef.current[index] = -1;
+        activeLoads += 1;
+
+        const finish = (ready: boolean) => {
+          if (cancelled) return;
+          statusRef.current[index] = ready ? 1 : 2;
+          activeLoads -= 1;
+          // Redraw only when this is the frame currently needed; loading frames in
+          // the background must not steal time from a user's scroll gesture.
+          if (index === Math.round(shownRef.current)) draw(true);
+          loadNext();
+        };
+
+        image.onload = () => finish(true);
+        image.onerror = () => finish(false);
+        image.src = frameUrls[index];
+        framesRef.current[index] = image;
+      }
+    };
+
     const tick = () => {
-      const diff = targetRef.current - shownRef.current;
-      if (Math.abs(diff) <= 0.05) {
+      const difference = targetRef.current - shownRef.current;
+      if (Math.abs(difference) <= 0.05) {
         shownRef.current = targetRef.current;
       } else {
-        shownRef.current += diff * EASE;
+        shownRef.current += difference * easing;
       }
       draw();
-      if (Math.abs(targetRef.current - shownRef.current) > 0.05) {
+
+      if (!constrained && Math.abs(targetRef.current - shownRef.current) > 0.05) {
         rafId = requestAnimationFrame(tick);
       } else {
         shownRef.current = targetRef.current;
@@ -110,83 +171,67 @@ export const ScrollBackgroundAnimation: React.FC = () => {
       }
     };
 
-    let ticking = false;
+    let scrolling = false;
     const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
+      if (scrolling) return;
+      scrolling = true;
       requestAnimationFrame(() => {
-        ticking = false;
+        scrolling = false;
         updateFromScroll();
-        if (!rafId) rafId = requestAnimationFrame(tick);
+        if (constrained) {
+          shownRef.current = targetRef.current;
+          draw();
+        } else if (!rafId) {
+          rafId = requestAnimationFrame(tick);
+        }
+      });
+    };
+
+    const onResize = () => {
+      if (resizeRafId) return;
+      resizeRafId = requestAnimationFrame(() => {
+        resizeRafId = 0;
+        resize();
+        updateFromScroll();
       });
     };
 
     resize();
     updateFromScroll();
-    rafId = requestAnimationFrame(tick);
-
-    window.addEventListener("resize", resize);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("orientationchange", resize);
-    window.visualViewport?.addEventListener("resize", resize);
-
-    // Progressive preloader: once a frame in the visible range is ready,
-    // redraw so the scrub catches up in real time.
-    let next = 0;
-    let active = 0;
-    const loadNext = () => {
-      if (cancelled) return;
-      while (active < CONCURRENCY && next < count) {
-        const i = next++;
-        const img = new Image();
-        img.decoding = "async";
-        const onDone = (ok: boolean) => {
-          if (cancelled) return;
-          statusRef.current[i] = ok ? 1 : 2;
-          active -= 1;
-          if (i <= Math.round(shownRef.current)) draw();
-          loadNext();
-        };
-        img.onload = () => onDone(true);
-        img.onerror = () => onDone(false);
-        img.src = FRAME_URLS[i];
-        framesRef.current[i] = img;
-        active += 1;
-      }
-    };
     loadNext();
+    if (!prefersReducedMotion) rafId = requestAnimationFrame(tick);
+    else draw(true);
+
+    window.addEventListener("resize", onResize);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("orientationchange", onResize);
+    window.visualViewport?.addEventListener("resize", onResize);
 
     return () => {
       cancelled = true;
       if (rafId) cancelAnimationFrame(rafId);
-      window.removeEventListener("resize", resize);
+      if (resizeRafId) cancelAnimationFrame(resizeRafId);
+      window.removeEventListener("resize", onResize);
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("orientationchange", resize);
-      window.visualViewport?.removeEventListener("resize", resize);
-      for (const img of framesRef.current) {
-        if (img) {
-          img.onload = null;
-          img.onerror = null;
+      window.removeEventListener("orientationchange", onResize);
+      window.visualViewport?.removeEventListener("resize", onResize);
+      framesRef.current.forEach((image) => {
+        if (image) {
+          image.onload = null;
+          image.onerror = null;
         }
-      }
+      });
     };
   }, []);
 
   return (
-    <div
-      aria-hidden="true"
-      className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[#050505]"
-    >
+    <div aria-hidden="true" className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[#050505]">
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full"
-        style={{ filter: "contrast(1.08) saturate(1.1)" }}
+        className="absolute inset-0 h-full w-full"
       />
       <div className="absolute inset-0 bg-[#050505]/25" />
-      <div
-        className="absolute inset-0"
-        style={{ boxShadow: "inset 0 0 220px 70px rgba(0, 0, 0, 0.35)" }}
-      />
+      <div className="absolute inset-0" style={{ boxShadow: "inset 0 0 180px 50px rgba(0, 0, 0, 0.35)" }} />
     </div>
   );
 };
