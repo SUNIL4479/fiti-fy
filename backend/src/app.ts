@@ -51,6 +51,36 @@ app.use(
     credentials: true,
   })
 );
+
+// Fallback CORS headers middleware: ensures responses include CORS headers
+// for known frontend origins even if upstream proxies strip them.
+app.use((req, res, next) => {
+  const origin = req.headers.origin as string | undefined;
+  try {
+    if (origin && (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app'))) {
+      if (!res.getHeader('Access-Control-Allow-Origin')) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+      }
+      if (!res.getHeader('Access-Control-Allow-Credentials')) {
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+      }
+      if (!res.getHeader('Access-Control-Allow-Methods')) {
+        res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+      }
+      if (!res.getHeader('Access-Control-Allow-Headers')) {
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+      }
+    }
+  } catch (e) {
+    // ignore header set errors
+  }
+
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+
+  next();
+});
 app.set("trust proxy", 1);
 app.use(express.json({ limit: "10mb" }));
 
