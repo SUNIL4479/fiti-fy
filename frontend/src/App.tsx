@@ -10,13 +10,13 @@ import { Footer } from "./components/layout/Footer";
 import { LandingPage } from "./components/landing/LandingPage";
 import { OnboardingModal } from "./components/auth/OnboardingModal";
 import { DashboardOverview } from "./components/dashboard/DashboardOverview";
-import { AIWorkoutBuilder } from "./components/workout/AIWorkoutBuilder";
 import { ActiveWorkoutPlayer } from "./components/workout/ActiveWorkoutPlayer";
 import { NutritionPlanner } from "./components/nutrition/NutritionPlanner";
 import { FloatingChatWidget } from "./components/coach/FloatingChatWidget";
-import { ProgressAnalytics } from "./components/analytics/ProgressAnalytics";
 import { LeaderboardAndBadges } from "./components/gamification/LeaderboardAndBadges";
-import { ScrollBackgroundAnimation } from "./components/ScrollBackgroundAnimation";
+import { SettingsScreen } from "./components/settings/SettingsScreen";
+import { DiscoverWorkouts } from "./components/workout/DiscoverWorkouts";
+import { ProgressReport } from "./components/analytics/ProgressReport";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>("landing");
@@ -139,11 +139,10 @@ export default function App() {
 
   return (
     <div
-      className={`relative min-h-screen text-slate-100 font-sans flex flex-col justify-between selection:bg-[#c6ff00] selection:text-black ${
-        showLanding ? "bg-[#050505]/60" : "bg-black"
+      className={`relative min-h-screen font-sans flex flex-col justify-between selection:bg-[#1769e0] selection:text-white ${
+        showLanding ? "bg-[#050505]/60 text-slate-100" : "bg-[#f7f8fb] text-[#171a22]"
       }`}
     >
-      {showLanding && <ScrollBackgroundAnimation />}
       <div className="relative z-10 flex flex-col flex-1 justify-between">
         <div>
           <Navbar
@@ -172,37 +171,37 @@ export default function App() {
             ) : (
               <>
                 {activeTab === "dashboard" && (
-                  <DashboardOverview
+              <DashboardOverview
                     user={user}
                     recommendedWorkout={recommendedWorkout!}
                     badges={badges}
                     onStartWorkout={handleLaunchWorkout}
-                    onOpenChat={() => setIsChatOpen(true)}
+                onOpenChat={() => setIsChatOpen(true)}
+                onOpenNutrition={() => setActiveTab("nutrition")}
                     onUpdateWater={handleUpdateWater}
                     onUpdateWeight={handleUpdateWeight}
                   />
                 )}
 
-                {activeTab === "workout_studio" && (
-                  <AIWorkoutBuilder
-                    user={user}
-                    onLaunchWorkout={handleLaunchWorkout}
-                  />
-                )}
+                {activeTab === "workout_studio" && <DiscoverWorkouts user={user} onLaunchWorkout={handleLaunchWorkout} onOpenNutrition={() => setActiveTab("nutrition")} />}
 
                 {activeTab === "nutrition" && <NutritionPlanner user={user} />}
 
-                {activeTab === "analytics" && <ProgressAnalytics user={user} saveProfile={saveProfile} />}
+                {activeTab === "analytics" && <ProgressReport user={user} onLogWeight={handleUpdateWeight} />}
 
                 {activeTab === "badges" && (
                   <LeaderboardAndBadges user={user} badges={badges} />
+                )}
+
+                {activeTab === "settings" && (
+                  <SettingsScreen user={user} onEditProfile={() => setShowOnboarding(true)} />
                 )}
               </>
             )}
           </main>
         </div>
 
-        <Footer />
+        {!user && <Footer />}
       </div>
 
       {/* Floating AI Coach Chat Widget */}
@@ -211,6 +210,7 @@ export default function App() {
           user={user}
           open={isChatOpen}
           onToggle={() => setIsChatOpen((prev) => !prev)}
+          hasBottomNavigation={Boolean(user)}
         />
       )}
 

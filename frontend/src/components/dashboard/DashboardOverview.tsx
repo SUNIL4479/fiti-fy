@@ -1,18 +1,19 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { UserProfile, WorkoutPlan, Badge } from "../../types";
 import {
-  Flame,
-  Zap,
-  Droplets,
-  Award,
-  Play,
-  Plus,
-  Scale,
-  Sparkles,
-  Dumbbell,
+  Apple,
   Bot,
-  TrendingUp,
-  CheckCircle2,
+  CalendarDays,
+  Check,
+  ChevronRight,
+  Clock3,
+  Dumbbell,
+  Flame,
+  Play,
+  Search,
+  Sparkles,
+  Target,
+  Trophy,
 } from "lucide-react";
 
 interface DashboardOverviewProps {
@@ -21,9 +22,12 @@ interface DashboardOverviewProps {
   badges: Badge[];
   onStartWorkout: (workout: WorkoutPlan) => void;
   onOpenChat: () => void;
+  onOpenNutrition: () => void;
   onUpdateWater: (amountMl: number) => void;
   onUpdateWeight: (newWeightKg: number) => void;
 }
+
+const focusAreas = ["Abs", "Arms", "Chest", "Legs", "Shoulders", "Full body"];
 
 export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
   user,
@@ -31,366 +35,108 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
   badges,
   onStartWorkout,
   onOpenChat,
-  onUpdateWater,
-  onUpdateWeight,
+  onOpenNutrition,
 }) => {
-  const [showWeightModal, setShowWeightModal] = useState(false);
-  const [newWeight, setNewWeight] = useState(user.weightKg);
-
-  // Daily AI To-Do List State
-  const [todoTasks, setTodoTasks] = useState(
-    user.dailyTodoTasks || []
-  );
-
-  const toggleTask = (taskId: string) => {
-    setTodoTasks((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, completed: !t.completed } : t))
-    );
-  };
-
-  const completedCount = todoTasks.filter((t) => t.completed).length;
-
-  const waterPercent = Math.min(
-    100,
-    Math.round((user.waterIntakeMl / ((user.waterGoalLiters || 3) * 1000)) * 100)
-  );
-
-  const handleWeightSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onUpdateWeight(Number(newWeight));
-    setShowWeightModal(false);
-  };
+  const [focus, setFocus] = useState("Abs");
+  const todayIndex = new Date().getDay();
+  const week = useMemo(() => {
+    const today = new Date();
+    return Array.from({ length: 7 }, (_, index) => {
+      const day = new Date(today);
+      day.setDate(today.getDate() - todayIndex + index);
+      return { label: day.toLocaleDateString(undefined, { weekday: "narrow" }), date: day.getDate(), active: index === todayIndex };
+    });
+  }, [todayIndex]);
+  const completedWorkouts = user.workoutLogs?.length || 0;
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-white">
-      {/* Welcome Banner */}
-      <div className="relative rounded-[24px] bg-[#0a0a0a] border border-[#222222] p-6 sm:p-8 overflow-hidden shadow-2xl">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-[#c6ff00]/5 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 rounded-full bg-[#c6ff00]/10 text-[#c6ff00] text-xs font-bold uppercase tracking-wider border border-[#c6ff00]/30">
-                Level {user.level} Athlete
-              </span>
-              <span className="text-xs text-slate-400">XP: {user.xp} / 500</span>
-            </div>
-
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white">
-              Welcome back, <span className="text-[#c6ff00]">{user.name}</span>!
-            </h1>
-            <p className="text-slate-300 text-xs sm:text-sm max-w-xl">
-              Your AI coach has optimized today's <span className="text-[#c6ff00] font-semibold">{recommendedWorkout.title}</span> session. Zero equipment required.
-            </p>
-          </div>
-
-          {/* Quick Start Main CTA */}
-          <button
-            onClick={() => onStartWorkout(recommendedWorkout)}
-            className="px-8 py-4 rounded-2xl bg-[#c6ff00] hover:bg-[#b0e600] text-black font-bold text-base shadow-xl shadow-[#c6ff00]/20 transition-all duration-200 hover:scale-105 flex items-center justify-center gap-3 shrink-0"
-          >
-            <Play className="w-5 h-5 fill-black" />
-            <span>Start Today's Workout</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Top 4 Quick Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-        {/* Streak */}
-        <div className="bg-[#111111] border border-[#222222] p-5 sm:p-6 rounded-[24px] flex items-center justify-between">
+    <div className="min-h-screen bg-[#f7f8fb] pb-28 text-[#171a22]">
+      <div className="mx-auto max-w-3xl px-4 pt-5 sm:px-6 sm:pt-8">
+        <header className="mb-6 flex items-center justify-between">
           <div>
-            <div className="text-[10px] sm:text-xs font-semibold text-[#666666] uppercase tracking-wider">Workout Streak</div>
-            <div className="text-2xl sm:text-3xl font-bold text-white mt-1 flex items-baseline gap-1.5">
-              <span>{user.streakDays || 1}</span>
-              <span className="text-xs font-normal text-[#666666]">Days Active</span>
-            </div>
+            <p className="text-xs font-semibold tracking-[0.18em] text-[#727987] uppercase">FitiFy</p>
+            <h1 className="mt-1 text-2xl font-black tracking-tight sm:text-3xl">HOME WORKOUT</h1>
           </div>
-          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
-            <Flame className="w-5 h-5 sm:w-6 sm:h-6 animate-pulse" />
-          </div>
-        </div>
-
-        {/* Calories Burned */}
-        <div className="bg-[#111111] border border-[#222222] p-5 sm:p-6 rounded-[24px] flex items-center justify-between">
-          <div>
-            <div className="text-[10px] sm:text-xs font-semibold text-[#666666] uppercase tracking-wider">Est. Calories Burned</div>
-            <div className="text-2xl sm:text-3xl font-bold text-[#c6ff00] mt-1 flex items-baseline gap-1.5">
-              <span>{recommendedWorkout.estimatedCalories || 380}</span>
-              <span className="text-xs font-normal text-[#666666]">kcal today</span>
-            </div>
-          </div>
-          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#c6ff00]/10 border border-[#c6ff00]/30 flex items-center justify-center text-[#c6ff00]">
-            <Zap className="w-5 h-5 sm:w-6 sm:h-6" />
-          </div>
-        </div>
-
-        {/* Water Intake */}
-        <div className="bg-[#111111] border border-[#222222] p-5 sm:p-6 rounded-[24px] flex items-center justify-between">
-          <div>
-            <div className="text-[10px] sm:text-xs font-semibold text-[#666666] uppercase tracking-wider">Water Hydration</div>
-            <div className="text-2xl sm:text-3xl font-bold text-sky-400 mt-1 flex items-baseline gap-1.5">
-              <span>{(user.waterIntakeMl / 1000).toFixed(1)}</span>
-              <span className="text-xs font-normal text-[#666666]">/ {user.waterGoalLiters || 3.0} L</span>
-            </div>
-          </div>
-          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
-            <Droplets className="w-5 h-5 sm:w-6 sm:h-6" />
-          </div>
-        </div>
-
-        {/* Weight Tracker */}
-        <div className="bg-[#111111] border border-[#222222] p-5 sm:p-6 rounded-[24px] flex items-center justify-between">
-          <div>
-            <div className="text-[10px] sm:text-xs font-semibold text-[#666666] uppercase tracking-wider">Current Weight</div>
-            <div className="text-2xl sm:text-3xl font-bold text-purple-400 mt-1 flex items-baseline gap-1.5">
-              <span>{user.weightKg}</span>
-              <span className="text-xs font-normal text-[#666666]">kg</span>
-            </div>
-          </div>
-          <button
-            onClick={() => setShowWeightModal(true)}
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 flex items-center justify-center text-purple-400 transition-colors"
-            title="Log new weight"
-          >
-            <Scale className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Target Transformation Progress Card */}
-      {user.targetBodyType && (
-        <div className="p-6 rounded-[24px] bg-[#0a0a0a] border border-[#c6ff00]/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 rounded-full bg-[#c6ff00]/10 text-[#c6ff00] text-xs font-extrabold uppercase border border-[#c6ff00]/30">
-                {user.transformationMonths || 5}-Month Transformation Target
-              </span>
-              <span className="text-xs text-slate-400 font-mono">Current: {user.bodyType || "Athletic"}</span>
-            </div>
-            <h3 className="text-lg sm:text-xl font-extrabold text-white">
-              Target Goal: <span className="text-[#c6ff00]">{user.targetBodyType}</span>
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
-              Daily home workout schedule maintained to complete your {user.transformationMonths || 5}-month transformation timeline safely without gym equipment.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <div className="text-xs text-slate-400">Streak Maintained</div>
-              <div className="text-lg font-black text-[#c6ff00]">{user.streakDays || 1} Days Active</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* AI Daily Workout To-Do List Section */}
-      <div className="p-6 rounded-[24px] bg-[#111111] border border-[#222222] space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#222222] pb-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#c6ff00]">Today's Transformation Schedule</span>
-              <span className="px-2 py-0.5 rounded-md bg-[#c6ff00]/20 text-[#c6ff00] text-[11px] font-bold">
-                {completedCount} / {todoTasks.length} Done
-              </span>
-            </div>
-            <h3 className="text-lg font-bold text-white">Daily AI Workout To-Do List</h3>
-          </div>
-          <div className="text-xs text-slate-400">
-            Complete daily tasks to maintain your <strong className="text-[#c6ff00]">{user.streakDays || 1}-day streak</strong>!
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {todoTasks.map((task) => (
-            <div
-              key={task.id}
-              onClick={() => toggleTask(task.id)}
-              className={`p-4 rounded-2xl border cursor-pointer transition-all flex items-start gap-3 ${task.completed
-                  ? "bg-[#c6ff00]/10 border-[#c6ff00] text-white"
-                  : "bg-[#0a0a0a] border-[#222222] text-slate-300 hover:border-[#333333]"
-                }`}
-            >
-              <div
-                className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5 transition-colors ${task.completed ? "bg-[#c6ff00] text-black" : "border border-slate-600 bg-[#1a1a1a]"
-                  }`}
-              >
-                {task.completed && <CheckCircle2 className="w-4 h-4 text-black" />}
-              </div>
-              <div className="flex-1 space-y-1">
-                <div className={`text-xs font-bold ${task.completed ? "line-through text-slate-400" : "text-white"}`}>
-                  {task.title}
-                </div>
-                <div className="flex items-center gap-2 text-[10px] text-slate-400 font-mono">
-                  <span>⏱️ {task.timeMin} mins</span>
-                  <span>• {task.category}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Main Grid: Scheduled Workout Card & Quick AI Features */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Today's Workout Focus */}
-        <div className="lg:col-span-8 bg-[#111111] border border-[#222222] rounded-[24px] p-6 space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="p-2 rounded-xl bg-[#c6ff00]/10 text-[#c6ff00]">
-                <Dumbbell className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-white">Today's Workout Program</h3>
-                <p className="text-xs text-slate-400">AI Customized for {user.goal.replace("_", " ")}</p>
-              </div>
-            </div>
-            <span className="px-3 py-1 rounded-full bg-[#1a1a1a] text-xs font-medium text-slate-300 border border-[#222222]">
-              {recommendedWorkout.totalMinutes} Mins
+          <div className="flex items-center gap-2">
+            <span className="flex h-10 items-center gap-1.5 rounded-full bg-[#fff1ee] px-3 text-sm font-bold text-[#f04e55]">
+              <Flame className="h-5 w-5 fill-current" /> {user.streakDays || 1}
             </span>
-          </div>
-
-          {/* Workout Card Details */}
-          <div className="p-5 rounded-2xl bg-[#0a0a0a] border border-[#222222] space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <div className="text-base sm:text-lg font-bold text-white">{recommendedWorkout.title}</div>
-                <div className="text-xs text-slate-400 mt-0.5">{recommendedWorkout.description}</div>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-lg bg-[#c6ff00]/10 text-[#c6ff00] text-xs font-semibold border border-[#c6ff00]/20">
-                  {recommendedWorkout.category}
-                </span>
-                <span className="px-2.5 py-1 rounded-lg bg-[#1a1a1a] text-slate-300 text-xs font-semibold border border-[#222222]">
-                  ~{recommendedWorkout.estimatedCalories} kcal
-                </span>
-              </div>
-            </div>
-
-            {/* Exercise List Preview Pills */}
-            <div className="space-y-2 pt-2 border-t border-[#222222]">
-              <div className="text-xs font-semibold text-[#666666] uppercase tracking-wider">Exercise Plan Overview</div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {recommendedWorkout.mainRoutine.map((ex, idx) => (
-                  <div key={idx} className="p-2.5 rounded-xl bg-[#111111] border border-[#222222] flex items-center justify-between">
-                    <span className="text-xs font-medium text-slate-200">{ex.name}</span>
-                    <span className="text-[11px] text-[#c6ff00] font-mono">
-                      {ex.reps ? `${ex.reps} reps` : `${ex.durationSec}s`}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="pt-2 flex justify-end">
-              <button
-                onClick={() => onStartWorkout(recommendedWorkout)}
-                className="px-6 py-2.5 rounded-xl bg-[#c6ff00] hover:bg-[#b0e600] text-black font-bold text-xs flex items-center gap-2 transition-all"
-              >
-                <Play className="w-4 h-4 fill-black" />
-                <span>Launch Guided Player</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Tools & Hydration Control */}
-        <div className="lg:col-span-4 space-y-6">
-          {/* Water Intake Controller */}
-          <div className="bg-[#111111] border border-[#222222] rounded-[24px] p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Droplets className="w-5 h-5 text-sky-400" />
-                <h4 className="text-base font-bold text-white">Daily Hydration Log</h4>
-              </div>
-              <span className="text-xs font-bold text-[#c6ff00]">{waterPercent}%</span>
-            </div>
-
-            {/* Hydration Progress Bar */}
-            <div className="w-full h-3 bg-[#1a1a1a] rounded-full overflow-hidden">
-              <div
-                className="h-full bg-[#c6ff00] transition-all duration-500"
-                style={{ width: `${waterPercent}%` }}
-              />
-            </div>
-
-            <div className="flex justify-between items-center pt-2 gap-2">
-              <button
-                onClick={() => onUpdateWater(250)}
-                className="flex-1 px-4 py-3 rounded-xl bg-[#1a1a1a] hover:bg-[#222222] border border-[#222222] text-slate-200 text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>+250 ml</span>
-              </button>
-              <button
-                onClick={() => onUpdateWater(500)}
-                className="flex-1 px-4 py-3 rounded-xl bg-[#1a1a1a] hover:bg-[#222222] border border-[#222222] text-[#c6ff00] text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>+500 ml</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Quick AI Tools Card */}
-          <div className="bg-[#111111] border border-[#222222] rounded-[24px] p-6 space-y-3">
-            <h4 className="text-base font-bold text-white">AI Studio Quick Tools</h4>
-
-            <button
-              onClick={onOpenChat}
-              className="w-full p-3.5 rounded-2xl bg-[#1a1a1a] hover:bg-[#222222] border border-[#222222] text-left flex items-center justify-between group transition-all"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-[#c6ff00]/10 text-[#c6ff00]">
-                  <Bot className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-sm font-bold text-white group-hover:text-[#c6ff00]">24/7 AI Trainer Chat</div>
-                  <div className="text-xs text-slate-400">Ask questions & modify workouts</div>
-                </div>
-              </div>
-              <Sparkles className="w-4 h-4 text-[#c6ff00]" />
+            <button onClick={onOpenChat} className="flex h-10 items-center gap-1.5 rounded-full bg-[#eaf1ff] px-3 text-sm font-bold text-[#1769e0]" aria-label="Open AI Coach">
+              <Bot className="h-5 w-5" /> <span className="hidden sm:inline">Coach</span>
             </button>
           </div>
-        </div>
-      </div>
+        </header>
 
-      {/* Weight Modal */}
-      {showWeightModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#111111] border border-[#222222] p-6 rounded-2xl max-w-sm w-full space-y-4">
-            <h3 className="text-lg font-bold text-white">Log Current Weight</h3>
-            <form onSubmit={handleWeightSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs text-slate-400 mb-1">Weight in Kilograms (kg)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  value={newWeight}
-                  onChange={(e) => setNewWeight(Number(e.target.value))}
-                  className="w-full bg-[#050505] border border-[#222222] rounded-xl p-3 text-white font-bold"
-                />
-              </div>
-              <div className="flex gap-2 justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowWeightModal(false)}
-                  className="px-4 py-2 rounded-xl bg-[#1a1a1a] text-xs text-slate-300 border border-[#222222]"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-xl bg-[#c6ff00] text-black font-bold text-xs"
-                >
-                  Save Log
-                </button>
-              </div>
-            </form>
+        <label className="mb-6 flex h-13 items-center gap-3 rounded-2xl bg-[#eef0f4] px-4 text-[#8a909b]">
+          <Search className="h-5 w-5" />
+          <input className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-[#8a909b]" placeholder="Search workouts, plans..." aria-label="Search workouts" />
+        </label>
+
+        <section className="mb-7 rounded-3xl bg-white p-5 shadow-[0_10px_30px_rgba(24,39,75,0.05)]">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-extrabold">Weekly goal</h2>
+              <p className="mt-0.5 text-sm text-[#737987]">Build a consistent routine</p>
+            </div>
+            <span className="text-lg font-black text-[#1769e0]">{Math.min(4, completedWorkouts)}/4</span>
           </div>
-        </div>
-      )}
+          <div className="grid grid-cols-7 gap-1 text-center">
+            {week.map((day) => (
+              <div key={`${day.label}-${day.date}`} className="space-y-2">
+                <span className="block text-xs font-medium text-[#8a909b]">{day.label}</span>
+                <span className={`mx-auto flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${day.active ? "bg-[#1769e0] text-white shadow-md shadow-blue-200" : "text-[#686f7b]"}`}>
+                  {day.active ? <Check className="h-5 w-5" /> : day.date}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-5 flex items-center gap-3 rounded-2xl bg-[#f0f3f8] p-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#dce9ff] text-[#1769e0]"><Trophy className="h-5 w-5" /></div>
+            <p className="text-sm font-semibold leading-5">Small daily sessions add up. Your next workout is ready!</p>
+          </div>
+        </section>
+
+        <section className="mb-7">
+          <div className="mb-3 flex items-center justify-between"><h2 className="text-xl font-extrabold">Today&apos;s challenge</h2><span className="text-sm font-bold text-[#1769e0]">For you</span></div>
+          <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#1f7af3] via-[#1264e7] to-[#0646bd] p-6 text-white shadow-xl shadow-blue-200">
+            <div className="absolute -right-9 -top-10 h-48 w-48 rounded-full border-[22px] border-white/10" />
+            <div className="relative max-w-sm">
+              <span className="rounded-lg bg-[#ffe1c9] px-3 py-1 text-[11px] font-black tracking-wide text-[#87511d] uppercase">Personalized plan</span>
+              <h3 className="mt-4 text-3xl font-black leading-tight">FULL BODY<br />ENERGY</h3>
+              <p className="mt-2 text-sm text-blue-100">Built for {user.experience} level · zero equipment</p>
+              <div className="mt-5 grid grid-cols-2 gap-3 text-sm font-semibold">
+                <span className="flex items-center gap-2"><Clock3 className="h-4 w-4" />{recommendedWorkout.totalMinutes} min</span>
+                <span className="flex items-center gap-2"><Target className="h-4 w-4" />{focus} focus</span>
+              </div>
+              <button onClick={() => onStartWorkout(recommendedWorkout)} className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3.5 font-extrabold text-[#1769e0] transition-transform hover:scale-[1.01]">
+                <Play className="h-4 w-4 fill-current" /> START WORKOUT <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section className="mb-7">
+          <h2 className="mb-3 text-xl font-extrabold">Body focus</h2>
+          <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none]">
+            {focusAreas.map((area) => <button key={area} onClick={() => setFocus(area)} className={`shrink-0 rounded-full px-5 py-2 text-sm font-bold transition-colors ${focus === area ? "border border-[#1769e0] bg-[#eaf1ff] text-[#1769e0]" : "bg-[#eef0f4] text-[#858b96]"}`}>{area}</button>)}
+          </div>
+        </section>
+
+        <section className="grid gap-3 sm:grid-cols-2">
+          <button onClick={onOpenNutrition} className="rounded-3xl bg-white p-5 text-left shadow-[0_10px_30px_rgba(24,39,75,0.05)] transition-transform hover:-translate-y-0.5">
+            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#ebf8ef] text-[#32a852]"><Apple className="h-5 w-5" /></div>
+            <h3 className="font-extrabold">Smart food suggestions</h3>
+            <p className="mt-1 text-sm leading-5 text-[#737987]">AI meals adjusted to your {user.heightCm} cm height and {user.weightKg} kg weight.</p>
+            <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-[#1769e0]">View food plan <ChevronRight className="h-4 w-4" /></span>
+          </button>
+          <button onClick={onOpenChat} className="rounded-3xl bg-white p-5 text-left shadow-[0_10px_30px_rgba(24,39,75,0.05)] transition-transform hover:-translate-y-0.5">
+            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#f1ecff] text-[#7651d8]"><Sparkles className="h-5 w-5" /></div>
+            <h3 className="font-extrabold">Ask your AI coach</h3>
+            <p className="mt-1 text-sm leading-5 text-[#737987]">Get form help, easier variations, or a quick motivation boost.</p>
+            <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-[#1769e0]">Start a chat <ChevronRight className="h-4 w-4" /></span>
+          </button>
+        </section>
+      </div>
     </div>
   );
 };

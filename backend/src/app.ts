@@ -22,13 +22,32 @@ dotenv.config({ path: path.join(envSearch, ".env"), quiet: true });
 mongoose.set("bufferCommands", false);
 
 const app = express();
+// CORS: allow known frontend origins and any Vercel subdomain by default.
+const defaultAllowedOrigins = [
+  "http://localhost:5173",
+  "https://fiti-fy-frontend.vercel.app",
+  "https://fiti-fy-frontend-git-main-productivityalex147-1718s-projects.vercel.app",
+];
+const envOrigins = (process.env.FRONTEND_ORIGINS || "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+const allowedOrigins = Array.from(new Set([...defaultAllowedOrigins, ...envOrigins]));
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://fiti-fy-frontend.vercel.app",
-      "https://fiti-fy-frontend-git-main-productivityalex147-1718s-projects.vercel.app",
-    ],
+    origin: (origin, callback) => {
+      // Allow non-browser requests (e.g., server-to-server) with no origin
+      if (!origin) return callback(null, true);
+      try {
+        if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+          return callback(null, true);
+        }
+      } catch (e) {
+        // fall through to deny
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   })
 );
@@ -563,11 +582,21 @@ app.post("/api/ai/generate-nutrition", async (req, res) => {
     const { profile } = req.body;
     const ai = await getGeminiClient();
 
-    const prompt = `Create a 1-day personalized home nutrition and meal plan for:
+    const heightCm = Number(profile?.heightCm) || 168;
+    const weightKg = Number(profile?.weightKg) || 65;
+    const targetWeightKg = Number(profile?.targetWeightKg) || weightKg;
+    const bmi = Number(profile?.bmi) || Number((weightKg / Math.pow(heightCm / 100, 2)).toFixed(1));
+    const prompt = `Create a 1-day personalized, nutritious home meal plan. It must be appropriate for the supplied body measurements and goal; do not make medical claims.
 Goal: ${profile?.goal || "General Health"}
-Daily Calorie Target: ${profile?.calorieTarget || 2000} kcal
+Height: ${heightCm} cm
+Current Weight: ${weightKg} kg
+Target Weight: ${targetWeightKg} kg
+BMI: ${bmi}
+Daily Calorie Target: ${profile?.calorieTarget || Math.round(weightKg * 30)} kcal
 Dietary Preference: ${profile?.diet || "Omnivore"}
 Age/Gender: ${profile?.age || 28} / ${profile?.gender || "Female"}
+
+Prioritize whole foods, practical portions, adequate protein and fibre. If the goal is weight loss, use a gentle calorie deficit; if muscle gain, provide a modest calorie surplus. Include substitutions that respect the dietary preference.
 
 Return JSON structure:
 {

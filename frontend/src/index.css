@@ -2,8 +2,8 @@
 
 @layer base {
   body {
-    background-color: #050505;
-    color: #ffffff;
+    background-color: #f7f8fb;
+    color: #171a22;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   }
 }
